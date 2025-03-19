@@ -1,0 +1,188 @@
+<div class="container">
+  <mat-card class="form-card">
+    <h2 class="title">טופס רישום</h2>
+    <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+      
+      <!-- פרטי תלמיד -->
+      <h3 class="section-title">פרטי תלמיד</h3>
+      <div class="form-row">
+        <mat-form-field class="half-width" appearance="outline">
+          <mat-label>שם משפחה</mat-label>
+          <input matInput formControlName="lastName" required>
+        </mat-form-field>
+
+        <mat-form-field class="half-width" appearance="outline">
+          <mat-label>שם פרטי</mat-label>
+          <input matInput formControlName="firstName" required>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field class="half-width" appearance="outline">
+          <mat-label>כהן/לוי/ישראל</mat-label>
+          <input matInput formControlName="kohenLeviIsrael" required>
+        </mat-form-field>
+
+        <mat-form-field class="half-width" appearance="outline">
+          <mat-label>תעודת זהות</mat-label>
+          <input matInput formControlName="identityNumber" required>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field class="half-width" appearance="outline">
+          <mat-label>כתובת</mat-label>
+          <input matInput formControlName="address" required>
+        </mat-form-field>
+
+        <mat-form-field class="half-width" appearance="outline">
+          <mat-label>מספר בניין</mat-label>
+          <input matInput formControlName="buildingNumber" required>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field class="half-width" appearance="outline">
+          <mat-label>עיר</mat-label>
+          <input matInput formControlName="city" required>
+        </mat-form-field>
+
+        <mat-form-field class="half-width" appearance="outline">
+          <mat-label>טלפון</mat-label>
+          <input matInput type="tel" formControlName="phone" required>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field class="half-width" appearance="outline">
+          <mat-label>ארץ לידה</mat-label>
+          <input matInput formControlName="countryOfBirth" required>
+        </mat-form-field>
+
+        <mat-form-field class="half-width" appearance="outline">
+          <mat-label>קופת חולים</mat-label>
+          <input matInput formControlName="healthInsurance" required>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field class="half-width" appearance="outline">
+          <mat-label>תאריך לידה עברי</mat-label>
+          <input matInput formControlName="hebrewDateOfBirth" required>
+        </mat-form-field>
+
+        <mat-form-field class="half-width" appearance="outline">
+          <mat-label>תאריך לידה לועזי</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="dateOfBirth" required>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <!-- פרטי הורים -->
+      <h3 class="section-title">פרטי הורים</h3>
+      <div class="form-row">
+        <mat-form-field class="half-width" appearance="outline">
+          <mat-label>שם האב</mat-label>
+          <input matInput formControlName="fatherName" required>
+        </mat-form-field>
+
+        <mat-form-field class="half-width" appearance="outline">
+          <mat-label>פלאפון האב</mat-label>
+          <input matInput type="tel" formControlName="fatherPhone" required>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field class="half-width" appearance="outline">
+          <mat-label>ארץ מוצא אב</mat-label>
+          <input matInput formControlName="fatherCountryOfOrigin" required>
+        </mat-form-field>
+
+        <mat-form-field class="half-width" appearance="outline">
+          <mat-label>עיסוק האב</mat-label>
+          <input matInput formControlName="fatherOccupation" required>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field class="half-width" appearance="outline">
+          <mat-label>שם האם</mat-label>
+          <input matInput formControlName="motherName" required>
+        </mat-form-field>
+
+        <mat-form-field class="half-width" appearance="outline">
+          <mat-label>שם משפחת האם</mat-label>
+          <input matInput formControlName="motherLastName" required>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field class="half-width" appearance="outline">
+          <mat-label>פלאפון האם</mat-label>
+          <input matInput type="tel" formControlName="motherPhone" required>
+        </mat-form-field>
+
+        <mat-form-field class="half-width" appearance="outline">
+          <mat-label>ארץ מוצא אם</mat-label>
+          <input matInput formControlName="motherCountryOfOrigin" required>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field class="full-width" appearance="outline">
+        <mat-label>אימייל</mat-label>
+        <input matInput type="email" formControlName="email" autocomplete="email" required>
+      </mat-form-field>
+
+      <h3 class="section-title"> פרטי מוסד לימודי קודם</h3>
+      <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>שם ישיבה</mat-label>
+        <input matInput formControlName="yeshivaName">
+      </mat-form-field>
+  
+      <mat-form-field appearance="outline">
+        <mat-label>שנות לימוד</mat-label>
+        <input matInput formControlName="yearsOfStudy">
+      </mat-form-field>
+  
+      <mat-form-field appearance="outline">
+        <mat-label>שם בית ספר קודם</mat-label>
+        <input matInput formControlName="previousSchool">
+      </mat-form-field>
+  
+      <mat-form-field appearance="outline">
+        <mat-label>כתובת בית ספר קודם</mat-label>
+        <input matInput formControlName="previousSchoolAddress">
+      </mat-form-field>
+  
+      <mat-form-field appearance="outline">
+        <mat-label>עיר בית ספר קודם</mat-label>
+        <input matInput formControlName="previousSchoolCity">
+      </mat-form-field>
+  
+      <mat-form-field appearance="outline">
+        <mat-label>טלפון בית ספר קודם</mat-label>
+        <input matInput formControlName="previousSchoolPhone">
+      </mat-form-field>
+  
+      <mat-form-field appearance="outline">
+        <mat-label>פקס בית ספר קודם</mat-label>
+        <input matInput formControlName="previousSchoolFax">
+      </mat-form-field>
+  
+      <mat-form-field appearance="outline">
+        <mat-label>אימייל בית ספר קודם</mat-label>
+        <input matInput type="email" formControlName="previousSchoolEmail">
+      </mat-form-field>
+      </div>
+      <!-- כפתור שליחה -->
+      <button mat-raised-button color="primary" type="submit" [disabled]="registrationForm.invalid">
+        שלח
+      </button>
+
+    </form>
+  </mat-card>
+</div>
+
+   
