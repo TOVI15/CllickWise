@@ -1,10 +1,11 @@
 export type typeStudent = {
-    id?: number,
-    firstName?: string,
-    lastName?: string,
-    email?: string,
-    password?: string,
-    phone?: string,
-    address?: string,
-    
+  id: number;
+  name: string;
+  lastName: string;
+  fatherName: string;
+  address: string;
+  city: string;
+  phone: string;
+  status: boolean;
+  class: string;
   }

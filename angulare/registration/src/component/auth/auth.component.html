@@ -1,3 +1,11 @@
+@if(isLoading) {
+<div class="loading-overlay">
+  <mat-progress-spinner color="primary" mode="indeterminate" diameter="80">
+  </mat-progress-spinner>
+  <p>שולח נתונים...</p>
+</div>
+}
+@else {
 <div class="container">
   <mat-card class="form-card">
     <h2 class="title">טופס רישום</h2>
@@ -16,7 +24,7 @@
         </mat-form-field>
       </div>
 
-      <!-- <div class="form-row">
+       <div class="form-row">
           <mat-form-field class="custom-input" >
             <mat-label>כהן/לוי/ישראל</mat-label>
             <input matInput formControlName="kohenLeviIsrael" required>
@@ -28,7 +36,7 @@
           </mat-form-field>
         </div>
 
-        <div class="form-row">
+        <!-- <div class="form-row"> 
           <mat-form-field class="custom-input">
             <mat-label>כתובת</mat-label>
             <input matInput formControlName="address" required>
@@ -76,9 +84,9 @@
           </mat-form-field>
         </div>
 
-       פרטי הורים -->
-      <!-- <h3 class="section-title">פרטי הורים</h3>
-        <div class="form-row">
+       <!-- פרטי הורים  
+       <h3  class="section-title">פרטי ההורים</h3>
+        <div formGroupName="additionalInfo" class="form-row">
           <mat-form-field class="custom-input" >
             <mat-label>שם האב</mat-label>
             <input matInput formControlName="fatherName" required>
@@ -90,7 +98,7 @@
           </mat-form-field>
         </div>
 
-        <div class="form-row">
+        <div formGroupName="additionalInfo" class="form-row">
           <mat-form-field class="custom-input" >
             <mat-label>ארץ מוצא אב</mat-label>
             <input matInput formControlName="fatherCountryOfOrigin" required>
@@ -102,7 +110,7 @@
           </mat-form-field>
         </div>
 
-        <div class="form-row">
+        <div formGroupName="additionalInfo" class="form-row">
           <mat-form-field class="custom-input" >
             <mat-label>שם האם</mat-label>
             <input matInput formControlName="motherName" required>
@@ -114,7 +122,7 @@
           </mat-form-field>
         </div>
 
-        <div class="form-row">
+        <div formGroupName="additionalInfo" class="form-row">
           <mat-form-field class="custom-input" >
             <mat-label>פלאפון האם</mat-label>
             <input matInput type="tel" formControlName="motherPhone" required>
@@ -125,7 +133,7 @@
             <input matInput formControlName="motherCountryOfOrigin" required>
           </mat-form-field>
         </div>
-        <div class="form-row">
+        <div formGroupName="additionalInfo" class="form-row">
           <mat-form-field class="custom-input" >
             <mat-label>עיסוק האם</mat-label>
             <input matInput formControlName="motherOccupation" required>
@@ -137,9 +145,9 @@
           </mat-form-field>
         </div>
         <h3 class="section-title">מקומות לימוד קודמים</h3>
-        <div class="form-row">
+        <div formGroupName="additionalInfo" class="form-row">
           <mat-form-field class="custom-input" >
-            <mat-label>ת"ת</mat-label>
+            <mat-label>שם ישיבה</mat-label>
             <input matInput formControlName="yeshivaName">
           </mat-form-field>
 
@@ -148,18 +156,8 @@
             <input matInput formControlName="yearsOfStudy">
           </mat-form-field>
         </div>
-        <div class="form-row">
-          <mat-form-field class="custom-input" >
-            <mat-label>שם הישיבה</mat-label>
-            <input matInput formControlName="previousSchool">
-          </mat-form-field>
 
-          <mat-form-field class="custom-input" >
-            <mat-label>כתובת</mat-label>
-            <input matInput formControlName="previousSchoolAddress">
-          </mat-form-field>
-        </div>
-        <div class="form-row">
+        <div formGroupName="additionalInfo" class="form-row">
           <mat-form-field class="custom-input" >
             <mat-label>עיר</mat-label>
             <input matInput formControlName="previousSchoolCity">
@@ -171,10 +169,10 @@
           </mat-form-field>
         </div>
 
-        <div class="form-row">
+        <div formGroupName="additionalInfo" class="form-row">
           <mat-form-field class="custom-input" >
-            <mat-label>פקס</mat-label>
-            <input matInput formControlName="previousSchoolFax">
+            <mat-label>כתובת</mat-label>
+            <input matInput formControlName="previousSchoolAddress">
           </mat-form-field>
 
           <mat-form-field class="custom-input" >
@@ -183,47 +181,48 @@
           </mat-form-field>
         </div>
 
-        <div class="form-row">
+        <div formGroupName="additionalInfo" class="form-row">
           <mat-form-field class="custom-input" >
             <mat-label>שם ראש הישיבה</mat-label>
-            <input matInput formControlName="previousSchoolFax">
+            <input matInput formControlName="roshYeshivaName">
           </mat-form-field>
 
           <mat-form-field class="custom-input" >
             <mat-label>טלפון רה"י</mat-label>
-            <input matInput type="email" formControlName="previousSchoolEmail">
+            <input matInput type="email" formControlName="roshYeshivaPhone">
           </mat-form-field>
-        </div>-->
-      <div class="form-row">
+        </div> 
+ המלצות -->
+      <div formGroupName="additionalInfo" class="form-row">
         <mat-form-field class="custom-input">
           <mat-label>הערות</mat-label>
           <textarea matInput formControlName="note" autocomplete="הערות" rows="1"></textarea>
         </mat-form-field>
       </div>
-      <!--  תמונות -->
+       <!-- תמונות  -->
       <h3 class="section-title">העלאת קבצים</h3>
-      
+
       <div class="upload-container">
         <label for="idCard" class="upload-title">העלאת צילום ת.ז. של ההורים</label>
         <label for="idCard" class="upload-label">
           <mat-icon class="upload-icon">cloud_upload</mat-icon>
-          <span>{{ selectedIdCardFileName || 'לא נבחר קובץ' }}</span>
+          <span class="file-name">{{ selectedIdCardFileName || 'לא נבחר קובץ' }}</span>
         </label>
         <input type="file" id="idCard" (change)="onIdCardChange($event)" accept="image/*" hidden>
       </div>
-      
+
       <!-- העלאת תמונת פספורט -->
       <div class="upload-container">
         <label for="passportPhoto" class="upload-title">העלאת תמונת פספורט</label>
         <label for="passportPhoto" class="upload-label">
           <mat-icon class="upload-icon">cloud_upload</mat-icon>
-          <span>{{ selectedPassportFileName || 'לא נבחר קובץ' }}</span>
+          <span class="file-name">{{ selectedPassportFileName || 'לא נבחר קובץ' }}</span>
         </label>
         <input type="file" id="passportPhoto" (change)="onPassportChange($event)" accept="image/*" hidden>
       </div>
 
       <!-- פרטי תשלום  -->
-      <h3 class="section-title">פרטי תשלום</h3>
+      <h3 class="section-title">אמצעי תשלום</h3>
       <div class="payment-options">
         <mat-radio-group formControlName="paymentMethod" required>
           <mat-radio-button value="credit">אשראי</mat-radio-button>
@@ -242,3 +241,13 @@
     </form>
   </mat-card>
 </div>
+}
+@if (alert.open) {
+<div class="alert-container" [ngClass]="alert.severity">
+  <mat-icon class="alert-icon">error_outline</mat-icon>
+  <span>{{ alert.message }}</span>
+  <button mat-icon-button (click)="closeAlert()" aria-label="סגור">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+}

@@ -1,10 +1,9 @@
 import { useState, useContext } from 'react';
 import { Button, Modal, Box, Typography, TextField, Fade, AlertColor } from '@mui/material';
 import axios from 'axios';
-import { UserContext } from '../main/contex';
 import ErrorAlert from '../main/ErrorAlart';
 import { useNavigate } from 'react-router';
-
+import { UserContext } from '../main/contexUser';
 
 const backgroundStyle = {
   backgroundImage: "url('./images/2.jpg')",
@@ -59,8 +58,8 @@ export default function Login() {
     }
 
     try {
-      const res = await axios.post('http://localhost:3000/api/user/login', { identity, password });
-      dispatch({ type: 'Create_User', data: res.data.user });
+      const res = await axios.post('https://localhost:7278/api/Auth/login', { identity, password });
+      dispatch({ type: 'Create_User', data: { fullName: res.data.fullName, token: res.data.token } });
       setOpen(false);
       navigate('/main');
     } catch (error: any) {

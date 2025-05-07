@@ -1,14 +1,35 @@
-import { Outlet } from "react-router"
-import Bar from "./Bar"
-import Main from "./Main"
-// import Login from "../user/Login"
+import { Box } from "@mui/material";
+import Header from "./Header"; // האדר
+import { Sidebar } from "../students/Sidebar"; // הסיידבר
+import { Outlet } from "react-router";
+import Main from "./Main";
+import { SearchProvider } from "./contexSearch";
 
 const AppLayout = () => {
-    return (<>
+  return (
+    <Box sx={{ display: "flex", paddingTop: 8.5, flexDirection: "column", height: "100vh", direction: "rtl", overflow: "hidden" }}>
+      <SearchProvider>
+       
+        <Header />       
         <Main />
-        <Bar />
-        <Outlet />
-    </>)
-}
+        <Box sx={{ display: "flex", flexGrow: 1, overflow: "hidden" }}>
 
-export default AppLayout
+          <Box
+            sx={{
+              p: 2,
+            }}
+          >
+            <Sidebar />
+          </Box>
+
+          {/* תוכן הדף */}
+          <Box sx={{ flexGrow: 1, maxHeight: "calc(100% - 75px)", overflow: "hidden", pt: 3, bgcolor: "background.paper" }}>
+            <Outlet />
+          </Box>
+        </Box>
+      </SearchProvider>
+    </Box>
+  );
+};
+
+export default AppLayout;

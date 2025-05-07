@@ -2,7 +2,8 @@ import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
 import { blue } from '@mui/material/colors';
 import { useContext } from 'react';
-import { UserContext } from '../main/contex';
+import { UserContext } from '../main/contexUser';
+
 
 export default function FallbackAvatars() {
   const contex = useContext(UserContext);
@@ -20,7 +21,7 @@ export default function FallbackAvatars() {
         }}
         alt="Remy Sharp"
         src="/broken-image.jpg">
-        {user?.firstName?.charAt(0).toUpperCase()}
+        {user?.fullName?.charAt(0).toUpperCase()}
       </Avatar>
     </Stack>
   );

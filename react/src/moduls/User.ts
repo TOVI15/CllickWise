@@ -1,11 +1,11 @@
 export type typeUser = {
   id?: number,
-  firstName?: string,
-  lastName?: string,
+  fullName?: string,
   email?: string,
   password?: string,
   phone?: string,
-  address?: string
+  address?: string,
+  token?: string,
 }
 
 export type Action = {

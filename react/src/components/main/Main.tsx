@@ -1,12 +1,10 @@
-import UserProvider from "./contex";
 import AvatarName from "../user/AvatarName";
-import Registration from "../user/Registration";
+import UserProvider from "./contexUser";
 
 export default function Main() {
     return (<>
         <UserProvider>          
             <AvatarName></AvatarName>
-            <Registration></Registration>
         </UserProvider>
     </>)
 }

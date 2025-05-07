@@ -7,8 +7,8 @@ import { addRecipe } from "../../moduls/recipesSlice";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useContext, useState } from "react";
-import { UserContext } from "../main/contex";
 import ErrorAlert from "../main/ErrorAlart";
+import { UserContext } from "../main/contexUser";
 
 const validationSchema = yup.object({
   title: yup.string().required("Recipe Title is required"),
