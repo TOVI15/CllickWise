@@ -38,11 +38,14 @@ const StudentDialog = ({ open, student, onClose, onSave, isEditing }: StudentDia
         try {
           const response = await axios.get(`https://localhost:7278/api/Students/${student.id}`);
           setFolderPath(response.data.folderKey);
+          console.log(response.data.folderKey , "folderKey");
+
         } catch (error) {
           console.error("Failed to load folder path", error);
         }
       };
       fetchFolderPath();
+      
     }
   }, [open, student]);
 
