@@ -11,19 +11,77 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import emailjs from 'emailjs-com';
+
+export type Classroom = { id: number; name: string };
+
+let classrooms: Classroom[] = (
+  JSON.parse(localStorage.getItem('classrooms') || 'null') ?? [
+    { id: 1, name: 'כיתה א' },
+    { id: 2, name: 'כיתה ב' },
+    { id: 3, name: 'כיתה ג' }
+  ]
+).sort((a: Classroom, b: Classroom) => a.name.localeCompare(b.name, 'he'));
+
+const listeners: ((classrooms: Classroom[]) => void)[] = [];
+
+export function getClassrooms(): Classroom[] {
+  return [...classrooms]; // מחזיר עותק כדי למנוע שינוי ישיר
+}
+
+export function subscribeToClassrooms(listener: (classrooms: Classroom[]) => void): () => void {
+  listeners.push(listener);
+  listener(getClassrooms()); // שולח את המצב הנוכחי מיד
+  return () => {
+    const index = listeners.indexOf(listener);
+    if (index !== -1) listeners.splice(index, 1);
+  };
+}
+
+function saveToStorage() {
+  localStorage.setItem('classrooms', JSON.stringify(classrooms));
+}
+
+export function addClassroom(classroom: Classroom) {
+  const exists = classrooms.some(c => c.name === classroom.name);
+  if (exists) {
+    alert('כיתה בשם זה כבר קיימת');
+    return;
+  }
+  classrooms = [...classrooms, classroom];
+  saveToStorage();
+  listeners.forEach(l => l(getClassrooms()));
+}
+
+export function deleteClassroom(id: number) {
+  classrooms = classrooms.filter(c => c.id !== id).sort((a, b) => a.name.localeCompare(b.name, 'he'));
+  saveToStorage();
+  listeners.forEach(l => l(getClassrooms()));
+}
+
+export function updateClassroom(updated: Classroom) {
+  const exists = classrooms.some(c => c.name === updated.name);
+  if (exists) {
+    alert('כיתה בשם זה כבר קיימת');
+    return;
+  }
+  classrooms = classrooms.map(c => c.id === updated.id ? updated : c);
+  saveToStorage();
+  listeners.forEach(l => l(getClassrooms()));
+}
 
 export function Sidebar() {
   const location = useLocation();
   const [openClasses, setOpenClasses] = useState(false);
   const [selectedClass, setSelectedClass] = useState({ id: 0, name: '' });
-  const [classrooms, setClassrooms] = useState([
-    { id: 1, name: 'כיתה א' },
-    { id: 2, name: 'כיתה ב' },
-    { id: 3, name: 'כיתה ג' },
-  ]);
 
+  const [classrooms, setClassrooms] = useState(getClassrooms());
+
+  useEffect(() => {
+    const unsubscribe = subscribeToClassrooms(setClassrooms);
+    return () => unsubscribe();
+  }, []);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [newClassName, setNewClassName] = useState('');
   const [editClassId, setEditClassId] = useState<number | null>(null);
@@ -39,17 +97,19 @@ export function Sidebar() {
 
   const handleAddClass = () => {
     const newId = Date.now(); // מזהה ייחודי
-    setClassrooms(prev => [...prev, { id: newId, name: newClassName }]);
+    addClassroom({ id: newId, name: newClassName });
     setNewClassName('');
     setShowAddDialog(false);
   };
 
   const handleEditClass = (id: number, name: string) => {
-    setClassrooms(prev => prev.map(c => c.id === id ? { ...c, name } : c));
+    updateClassroom({ id, name });
   };
 
   const handleDeleteClass = () => {
-    setClassrooms(prev => prev.filter(c => c.id !== classToDelete));
+    if (classToDelete !== null) {
+      deleteClassroom(classToDelete);
+    }
     setClassToDelete(null);
     setShowDeleteDialog(false);
   };
@@ -57,7 +117,7 @@ export function Sidebar() {
   const handleSendStudentInvite = () => {
     const templateParams = {
       email: studentEmail,
-      link: " http://localhost:5173/"  // הקישור שתשלח (אתה יכול לשנות את הקישור הזה למשהו אחר)
+      link: "https://cllickwise.onrender.com/auth"  // הקישור שתשלח (אתה יכול לשנות את הקישור הזה למשהו אחר)
     };
     const isValidEmail = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(studentEmail);
     if (!studentEmail || !isValidEmail) {
@@ -182,7 +242,7 @@ export function Sidebar() {
                       onChange={(e) => handleEditClass(classroom.id, e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                          setEditClassId(null); 
+                          setEditClassId(null);
                         }
                       }}
                       size="small"

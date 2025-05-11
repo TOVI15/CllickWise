@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, Checkbox, IconButton, Button, Box, Dialog, DialogActions,
-  DialogContent, DialogContentText, DialogTitle, Avatar
+  DialogContent, DialogContentText, DialogTitle,
+  AlertColor
 } from "@mui/material";
 import { Delete, Edit, AccountBox, CheckCircle, PersonAdd } from "@mui/icons-material";
 import axios from "axios";
@@ -10,23 +11,44 @@ import { Spinner } from "../main/Spiner";
 import { typeStudent } from "../../moduls/Student";
 import StudentDialog from "./StudentCard";
 import { useSearch } from "../main/contexSearch";
+import { useLocation, useParams } from "react-router";
+import { Classroom, subscribeToClassrooms } from "./Sidebar";
+import ErrorAlert from "../main/ErrorAlart";
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import StudentCard from "./StudentCard";
 
 
 const StudentsTable: React.FC = () => {
   const [students, setStudents] = useState<typeStudent[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [classrooms, setClassrooms] = useState<Classroom[]>([]);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [multiDeleteMode, setMultiDeleteMode] = useState(false);
-  const [loading, setLoading] = useState(true); // מצב טעינה
-  const [registeredStudents, setRegisteredStudents] = useState<Set<number>>(new Set());
+  const [loading, setLoading] = useState(true);
   const [openStudent, setOpenStudent] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [selectedStudent, setSelectedStudent] = useState<typeStudent | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const { searchTerm, filterCriteria } = useSearch();
   const [filteredStudents, setFilteredStudents] = useState<typeStudent[]>([]);
+  const location = useLocation();
+  const [finalFiltered, setFinalFiltered] = useState(students);
+  const [editingStudentId, setEditingStudentId] = useState<number | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState(0);
+  const { groupId } = useParams();
+  const [alertState, setAlertState] = useState({ open: false, message: "", severity: "success" as "success" | "error" as AlertColor });
+  const printRef = useRef<HTMLDivElement>(null);
+  const statusFromPath = location.pathname.split('/')[4];
 
-  const handleOpenDialog = (student : any, editMode = false) => {
+  const filteredByRoute = filteredStudents.filter((student) => {
+    if (groupId !== undefined) {
+      return student.groupId === Number(groupId);
+    }
+    return statusFromPath === "true" ? student.registerStudent === true : student.registerStudent === false;
+  });
+
+  const handleOpenDialog = (student: typeStudent, editMode = false) => {
     setSelectedStudent(student);
     setIsEditing(editMode);
     setOpenStudent(true);
@@ -37,13 +59,11 @@ const StudentsTable: React.FC = () => {
   };
 
   const handleSaveStudent = (updatedStudent: typeStudent) => {
-    axios.put(`https://localhost:7278/api/Students/${updatedStudent.id}`, {  updatedStudent })
-    .then(res => console.log("סטטוס התעדכן בשרת"))
-    .catch(err => console.error("שגיאה בעדכון הסטטוס"));
-    console.log("סטודנט מעודכן:", updatedStudent);
-    handleCloseDialog(); 
+    axios.put(`https://localhost:7278/api/Students/${updatedStudent.id}`, updatedStudent)
+      .then(res => console.log("תלמיד התעדכן בשרת"))
+      .catch(err => console.error("שגיאה בעדכון התלמיד"));
+    handleCloseDialog();
   };
-
   useEffect(() => {
     axios.get("https://localhost:7278/api/Students")
       .then((res) => {
@@ -54,31 +74,37 @@ const StudentsTable: React.FC = () => {
       .catch((err) => {
         console.error(err);
         setLoading(false);
+        setAlertState({ open: true, message: "אירעה שגיאה בלתי צפויה", severity: "error" });
       });
+    const unsubscribe = subscribeToClassrooms(setClassrooms);
+    return () => unsubscribe();
   }, []);
-
-  useEffect(() => {
-    const filtered = students.filter((student) => {
-      // בדוק אם name ו-lastName קיימים לפני שנבצע את קריאת toLowerCase()
-      const nameMatch = student.name && student.name.toLowerCase().includes(searchTerm.toLowerCase());
-      const lastNameMatch = student.lastName && student.lastName.toLowerCase().includes(searchTerm.toLowerCase());
+  const filterStudents = () => {
+    const safeSearchTerm = typeof searchTerm === 'string' ? searchTerm.toLowerCase() : '';
   
-      // אם ה-criteria הוא לפי שם
+    const filteredResults = filteredByRoute.filter((student) => {
+      const nameMatch =
+        student.firstName?.toLowerCase().includes(safeSearchTerm) || false;
+      const lastNameMatch =
+        student.lastName?.toLowerCase().includes(safeSearchTerm) || false;
       const searchMatch = nameMatch || lastNameMatch;
   
       if (filterCriteria === 'name') {
         return searchMatch;
       } else if (filterCriteria === 'age') {
-        // בדוק אם class קיים לפני שנבצע קריאת toString()
-        const classMatch = student.class && student.class.toString().includes(searchTerm);
+        const classMatch = student.groupId?.toString().includes(safeSearchTerm) || false;
         return searchMatch && classMatch;
       }
   
       return searchMatch;
     });
   
-    setFilteredStudents(filtered);
-  }, [searchTerm, filterCriteria, students]);
+    setFinalFiltered(filteredResults);
+  };
+  useEffect(() => {
+    filterStudents();
+  }, [location.pathname, searchTerm, filterCriteria, filteredStudents]);
+
   const handleSelect = (id: number) => {
     setSelectedIds(prev =>
       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
@@ -95,7 +121,91 @@ const StudentsTable: React.FC = () => {
     setMultiDeleteMode(true);
     setOpenDialog(true);
   };
+  const printCards = () => {
+    const content = printRef.current;
 
+    if (!content) return;
+
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+
+    if (!printWindow) {
+      alert('לא ניתן לפתוח חלון הדפסה');
+      return;
+    }
+
+    const style = `
+      <style>
+        @media print {
+          body {
+            direction: rtl;
+            font-family: sans-serif;
+          }
+  
+          .print-area {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            padding: 20px;
+          }
+  
+          .print-card-wrapper {
+            width: 48%;
+            page-break-inside: avoid;
+          }
+  
+          .student-card {
+            border: 1px solid #ccc;
+            padding: 16px;
+            margin: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+          }
+        }
+      </style>
+    `;
+
+    printWindow.document.open();
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>הדפסת כרטיסי תלמיד</title>
+          ${style}
+        </head>
+        <body>
+          ${content.innerHTML}
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+
+    // זמן קצר להבטיח שה־DOM נטען לפני הדפסה
+    setTimeout(() => {
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
+    }, 500);
+  };
+  const studentsToPrint = selectedStudent
+    ? [selectedStudent]
+    : students.filter(s => selectedIds.includes(s.id));
+  
+  const exportToExcel = () => {
+    const dataToExport = students.filter((s) =>
+      selectedIds.length === 0 || selectedIds.includes(s.id)
+    );
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Students");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(blob, 'students.xlsx');
+  };
   const confirmDelete = () => {
     if (multiDeleteMode) {
       // במקרה של מחיקה מרובה
@@ -127,23 +237,34 @@ const StudentsTable: React.FC = () => {
     }
     setOpenDialog(false);
   };
-
-  const handleRegister = (id: number) => {
-    setRegisteredStudents(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);  // אם כבר רשום, מבטלים את הרישום
-      } else {
-        newSet.add(id);  // אם לא רשום, מוסיפים
-      }
-      return newSet;
-    });
-
-    // לעדכן בשרת את הסטטוס של התלמיד
-    axios.put(`https://localhost:7278/api/Students/${id}`, { status: registeredStudents.has(id) ? false : true })
-      .then(res => console.log("סטטוס התעדכן בשרת"))
-      .catch(err => console.error("שגיאה בעדכון הסטטוס"));
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>, student: typeStudent) => {
+    const newGroupId = parseInt(e.target.value);
+    setSelectedGroup(newGroupId);
+    setIsEditing(false);
+    const updatedStudent = { ...student, groupId: newGroupId };
+    handleSaveStudent(updatedStudent); // שימוש בפונקציה הקיימת שלך
   };
+  const handleRegister = (student: typeStudent) => {
+    const updatedStudent = { ...student, registerStudent: !student.registerStudent };
+
+    axios.put(`https://localhost:7278/api/Students/${student.id}`, updatedStudent)
+      .then(() => {
+        console.log("סטטוס התעדכן בשרת");
+
+        // עדכון הסטודנט במערך המקומי
+        setStudents(prev =>
+          prev.map(s => s.id === student.id ? { ...s, registerStudent: updatedStudent.registerStudent } : s)
+        );
+
+        setFilteredStudents(prev =>
+          prev.map(s => s.id === student.id ? { ...s, registerStudent: updatedStudent.registerStudent } : s)
+        );
+      })
+      .catch(err => {
+        console.error("שגיאה בעדכון הסטטוס", err);
+      });
+  };
+
 
   return (
     <Box sx={{ width: "97%", backgroundColor: "#f5f5f5", pt: 3, px: 2 }}>
@@ -157,6 +278,23 @@ const StudentsTable: React.FC = () => {
             >
               מחיקת נבחרים
             </Button>
+            <Button onClick={exportToExcel}>ייצוא לאקסל</Button>
+            <Button onClick={printCards}>הדפס כרטיסים</Button>
+            <div style={{ display: 'none' }}>
+              <div ref={printRef} className="print-area">
+                {studentsToPrint.map(student => (
+                 <div key={student.id} className="print-card-wrapper">
+                 <StudentCard
+                   student={student}
+                   open={false}
+                   onClose={() => {}}
+                   onSave={(student: typeStudent) => {}}
+                   isEditing={false}
+                 />
+               </div>
+                ))}
+              </div>
+            </div>
           </Box>
         )}
 
@@ -171,7 +309,6 @@ const StudentsTable: React.FC = () => {
                     sx={{ p: 0.5 }}
                   />
                 </TableCell>
-                <TableCell sx={{ fontWeight: "bold", color: "#37474f" }}>תמונה</TableCell>
                 <TableCell sx={{ fontWeight: "bold", color: "#37474f" }}>שם תלמיד</TableCell>
                 <TableCell sx={{ fontWeight: "bold", color: "#37474f" }}>משפחה</TableCell>
                 <TableCell sx={{ fontWeight: "bold", color: "#37474f" }}>אב</TableCell>
@@ -189,39 +326,86 @@ const StudentsTable: React.FC = () => {
                     <Spinner />
                   </TableCell>
                 </TableRow>
+              ) : finalFiltered.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={10} align="center">
+                    <Box
+                      sx={{
+                        backgroundColor: "#e3f2fd", // תכלת בהיר
+                        color: "#1565c0",            // כחול כהה
+                        padding: 3,
+                        borderRadius: 2,
+                        fontWeight: "bold",
+                        fontSize: "1.1rem",
+                        boxShadow: 1,
+                      }}
+                    >
+                      אין נתונים להצגה
+                    </Box>
+                  </TableCell>
+                </TableRow>
               ) : (
-                filteredStudents.map(student => (
+
+                finalFiltered.map(student => (
                   <TableRow key={student.id} hover sx={{ backgroundColor: selectedIds.includes(student.id) ? "#e3f2fd" : "transparent" }}>
+                    {alertState.open && (<ErrorAlert alertState={alertState} setAlertState={setAlertState} />)}
                     <TableCell padding="checkbox">
                       <Checkbox
                         checked={selectedIds.includes(student.id)}
                         onChange={() => handleSelect(student.id)}
                       />
                     </TableCell>
-                    <TableCell>
-                      <Avatar src={`https://click-wise-testpnoren.s3.us-east-1.amazonaws.com/40?text=${student.id}/password.jpg`} />
-                    </TableCell>
-                    <TableCell>{student.name}</TableCell>
+                    <TableCell>{student.firstName}</TableCell>
                     <TableCell>{student.lastName}</TableCell>
                     <TableCell>{student.fatherName}</TableCell>
                     <TableCell>{student.address}</TableCell>
                     <TableCell>{student.city}</TableCell>
                     <TableCell>{student.phone}</TableCell>
-                    <TableCell>{student.class}</TableCell>
+                    <TableCell>
+                      {editingStudentId === student.id ? (
+                        <select
+                          value={selectedGroup ?? ""}
+                          onChange={(e) => handleChange(e, student)}
+                          onBlur={() => setIsEditing(false)}
+                          className="border rounded px-2 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          autoFocus
+                        >
+                          <option value="" disabled>
+                            בחר קבוצה
+                          </option>
+                          {classrooms.map((cls) => (
+                            <option key={cls.id} value={cls.id}>
+                              {cls.name}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <span
+                          onClick={() => setEditingStudentId(student.id)}
+                          className="cursor-pointer text-blue-600 hover:underline"
+                        >
+                          {
+                            classrooms.find((cls) => cls.id === student.groupId)?.name
+                            ?? "בחר קבוצה"
+                          }
+                        </span>
+                      )}
+                    </TableCell>
+
                     <TableCell>
                       <Button
                         variant="contained"
                         sx={{
                           minWidth: 120,
-                          bgcolor: registeredStudents.has(student.id) ? "#607d8b" : "#1976d2",
+                          bgcolor: student.registerStudent ? "#607d8b" : "#1976d2",
                           color: "white",
-                          "&:hover": { bgcolor: registeredStudents.has(student.id) ? "#455a64" : "#135ba1" },
+                          "&:hover": { bgcolor: student.registerStudent ? "#455a64" : "#135ba1" },
                           display: "flex", alignItems: "center", gap: 1
                         }}
-                        onClick={() => handleRegister(student.id)}
-                        startIcon={registeredStudents.has(student.id) ? <CheckCircle /> : <PersonAdd />}
+                        onClick={() => handleRegister(student)}
+                        startIcon={student.registerStudent ? <CheckCircle /> : <PersonAdd />}
                       >
-                        {registeredStudents.has(student.id) ? "רשום" : "רישום"}
+                        {student.registerStudent ? "רשום" : "רישום"}
                       </Button>
                     </TableCell>
                     <TableCell>

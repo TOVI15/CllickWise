@@ -39,21 +39,20 @@ export class AuthComponent implements OnInit {
   generateStudentFolderName(firstName: string, lastName: string): string {
     const cleanFirst = firstName.trim().replace(/\s+/g, '_');
     const cleanLast = lastName.trim().replace(/\s+/g, '_');
-    const uniqueId = Date.now(); // אפשר גם להשתמש ב-UUID אם נתמך
+    const uniqueId = Date.now(); 
     return `${cleanFirst}_${cleanLast}_${uniqueId}`;
   }
-  private isFolderCreated = false;
   registrationForm: FormGroup;
   selectedIdCardFileName: string = '';
   selectedPassportFileName: string = '';
-  s3UploadUrl = 'https://your-s3-bucket-url.com/upload'; // כתובת API להעלאת קובץ ל-S3
+  s3UploadUrl = 'https://your-s3-bucket-url.com/upload'; 
   ngOnInit(): void { }
-  
+
   constructor(private fb: FormBuilder, private formService: FormService, private snackBar: MatSnackBar, private iconRegistry: MatIconRegistry,
     private sanitizer: DomSanitizer) {
     this.iconRegistry.addSvgIcon(
       'error',
-      this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/error.svg') // או אייקון קיים של Material
+      this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/error.svg')
     );
     this.registrationForm = this.fb.group({
       firstName: ['', Validators.required],
@@ -94,10 +93,6 @@ export class AuthComponent implements OnInit {
         note: ['', []],
       }),
     });
-    this.resetFolderFlag();
-  }
-  private resetFolderFlag() {
-    this.isFolderCreated = false;
   }
   onIdCardChange(event: any) {
     if (event.target.files && event.target.files[0]) {
@@ -151,39 +146,26 @@ export class AuthComponent implements OnInit {
   }
   handleUpload(fileType: 'idCard' | 'passport', folderName: string) {
     let selectedFile: File | null = null;
-  
+
     if (fileType === 'idCard') {
       selectedFile = this.registrationForm.get('idCardFile')?.value;
     } else if (fileType === 'passport') {
       selectedFile = this.registrationForm.get('passportFile')?.value;
     }
-  
+
     if (!selectedFile) {
       alert('נא לבחור קובץ לפני ההעלאה.');
       return;
     }
-  
+
     const fileName = fileType === 'idCard' ? 'id-card.jpg' : 'passport.jpg';
-  
+
     this.formService.getPresignedUrl(folderName, fileName).subscribe({
       next: (response) => {
         const presignedUrl = response.url;
-  
+
         this.formService.uploadFileToS3(presignedUrl, selectedFile!).subscribe({
           next: () => {
-            if (!this.isFolderCreated) {
-              this.isFolderCreated = true;
-  
-              this.formService.createFolder(folderName).subscribe({
-                next: () => {
-                  console.log('התיקייה נוצרה בהצלחה בשרת.');
-                },
-                error: (err) => {
-                  this.showAlert('הקובץ הועלה, אך אירעה שגיאה ביצירת התיקייה.');
-                  console.error('שגיאה ביצירת תיקייה:', err);
-                }
-              });
-            }
           },
           error: (err) => {
             this.showAlert('אירעה שגיאה בהעלאת הקובץ.');
@@ -198,7 +180,7 @@ export class AuthComponent implements OnInit {
       }
     });
   }
-  
+
 
   onSubmit() {
     if (this.registrationForm.valid) {
@@ -208,12 +190,14 @@ export class AuthComponent implements OnInit {
 
       const folderName = this.generateStudentFolderName(firstName, lastName);
 
-     
+
 
       this.formService.login(this.registrationForm.value, folderName).subscribe(
         (response) => {
           this.isLoading = false;
           this.showSuccessMessage();
+          this.handleUpload('idCard', folderName);
+          this.handleUpload('passport', folderName);
         },
         (error) => {
           this.isLoading = false;
@@ -221,8 +205,6 @@ export class AuthComponent implements OnInit {
           console.error('Login failed', error);
         }
       );
-      this.handleUpload('idCard', folderName);
-      this.handleUpload('passport', folderName);
     }
   }
 }

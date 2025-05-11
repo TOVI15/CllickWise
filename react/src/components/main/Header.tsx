@@ -4,14 +4,14 @@ import Button from '@mui/material/Button';
 import { Link } from 'react-router';
 import  Search  from '../students/Search';
 import { useSearch } from './contexSearch';
+import SmartSearch from '../students/SmartSearch';
+
 
 
 const Navbar: React.FC= () => {
   const { searchTerm, setSearchTerm, filterCriteria, setFilterCriteria } = useSearch();
-
   const handleSearch = (term: string) => {
     setSearchTerm(term);
-    // כאן תוכל להוסיף את הלוגיקה של החיפוש, כמו סינון רשימות או שליחה לשרת
   };
   
   return (
@@ -25,6 +25,7 @@ const Navbar: React.FC= () => {
         </Button>
         <div>
         <Search searchTerm={searchTerm} onSearch={handleSearch} />
+        <SmartSearch onSearch={handleSearch} />
     {/* טבלה / תכנים אחרים */}
   </div>
         {/* {!loginStart && <Navigate to="/" /> && <Button color="inherit" component={Link} to="/addrecipes" sx={{ marginTop: 2 }}> */}
