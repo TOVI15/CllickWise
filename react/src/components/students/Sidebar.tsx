@@ -117,7 +117,7 @@ export function Sidebar() {
   const handleSendStudentInvite = () => {
     const templateParams = {
       email: studentEmail,
-      link: "https://cllickwise.onrender.com/auth"  // הקישור שתשלח (אתה יכול לשנות את הקישור הזה למשהו אחר)
+      link: "https://cllickwise.onrender.com"  // הקישור שתשלח (אתה יכול לשנות את הקישור הזה למשהו אחר)
     };
     const isValidEmail = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(studentEmail);
     if (!studentEmail || !isValidEmail) {

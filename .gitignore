@@ -9,6 +9,32 @@
 *.user
 *.userosscache
 *.sln.docstates
+# קבצי מערכת / מערכת הפעלה
+__pycache__/
+*.py[cod]
+*.so
+*.log
+*.sqlite3
+.DS_Store
+
+# סביבת עבודה
+.env
+.venv/
+env/
+venv/
+*.egg-info/
+
+# VSCode או IDE אחרים
+.vscode/
+.idea/
+
+# קבצי Cache
+*.cache
+.cache/
+*.pkl
+
+# קבצי מערכת נוספים
+Thumbs.db
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

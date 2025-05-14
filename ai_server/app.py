@@ -1,14 +1,14 @@
+
 from flask import Flask, request, jsonify
 import openai
 from dotenv import load_dotenv
 import os
 
+from openai import OpenAI
 load_dotenv()
 
 api_key = os.getenv("OPENAI_API_KEY")
-
-openai.api_key = api_key
-
+client = OpenAI(api_key=api_key)
 app = Flask(__name__)
 @app.route('/ask', methods=['POST'])
 def ask():
@@ -25,9 +25,9 @@ def ask():
 ענה תשובה ברורה עם רשימה אם צריך:"""
 
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[{ "role": "user", "content": prompt }],
+        response = client.chat.completions.create(
+            model="gpt-4-turbo",
+            messages=[{"role": "user", "content": prompt}],
             temperature=0.3
         )
         answer = response.choices[0].message["content"]
