@@ -1,36 +1,39 @@
-
 from flask import Flask, request, jsonify
-import openai
-from dotenv import load_dotenv
-import os
-
 from openai import OpenAI
+import os
+from dotenv import load_dotenv
+
 load_dotenv()
 
-api_key = os.getenv("OPENAI_API_KEY")
-client = OpenAI(api_key=api_key)
 app = Flask(__name__)
+
+# יצירת לקוח של OpenAI לפי הגרסה החדשה
+client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+
 @app.route('/ask', methods=['POST'])
 def ask():
     data = request.get_json()
     query = data.get("query")
-    student_data = data.get("students")
+    if not query:
+        return jsonify({"error": "Missing query"}), 400
 
-    if not query or not student_data:
-        return jsonify({"error": "Missing data"}), 400
+    prompt = f"""
+    השאלה של המשתמש: "{query}"
 
-    prompt = f"""השאלה: {query}
-רשימת תלמידות:
-{student_data}
-ענה תשובה ברורה עם רשימה אם צריך:"""
+    המבנה של הנתונים בצד לקוח:
+    students = [{{ id, firstName, lastName, age, GroupId, status, registeredAt }}]
+
+    ענה רק בפונקציית סינון אחת ב-JavaScript (למשל: s => s.age === 15), ללא קריאה ל-students.filter. 
+    אל תוסיף טקסט, הסברים או תווים נוספים. 
+    """
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4-turbo",
+            model="gpt-4o-mini",  # שימי לב שהשם התקני הוא gpt-4o, לא gpt-4o-mini
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3
         )
-        answer = response.choices[0].message["content"]
+        answer = response.choices[0].message.content
         return jsonify({"result": answer})
     except Exception as e:
         return jsonify({"error": str(e)}), 500

@@ -11,7 +11,13 @@ import SmartSearch from '../students/SmartSearch';
 const Navbar: React.FC= () => {
   const { searchTerm, setSearchTerm, filterCriteria, setFilterCriteria } = useSearch();
   const handleSearch = (term: string) => {
-    setSearchTerm(term);
+    setSearchTerm(term); // זה החיפוש הרגיל
+    setFilterCriteria("")
+  };
+  
+  const handleSmartSearch = (criteria: { result: string }) => {
+    setFilterCriteria(criteria.result);
+    setSearchTerm("");
   };
   
   return (
@@ -25,7 +31,7 @@ const Navbar: React.FC= () => {
         </Button>
         <div>
         <Search searchTerm={searchTerm} onSearch={handleSearch} />
-        <SmartSearch onSearch={handleSearch} />
+        <SmartSearch filterCriteria={filterCriteria} onSearch={handleSmartSearch} />
     {/* טבלה / תכנים אחרים */}
   </div>
         {/* {!loginStart && <Navigate to="/" /> && <Button color="inherit" component={Link} to="/addrecipes" sx={{ marginTop: 2 }}> */}

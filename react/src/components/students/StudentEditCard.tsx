@@ -13,10 +13,21 @@ const EditStudent = () => {
     useEffect(() => {
         // שליפה מהשרת (כרגע מדומה)
         const fetchedStudent = {
-            id: Number(id),
-            firstName: `תלמיד ${id}`,
-            lastName: `שם ${id}`,
-            address: `רחוב הדוגמה ${id}`,
+            firstName: student?.firstName,
+            lastName: student?.lastName,
+            fatherName: student?.fatherName,
+            motherName: student?.motherName,
+            dateOfBirth: student?.dateOfBirth,
+            hebrewDateOfBirth: student?.hebrewDateOfBirth,
+            identityNumber: student?.identityNumber,
+            healthInsurance: student?.healthInsurance,
+            yeshivaName: student?.yeshivaName,
+            fatherOccupation: student?.fatherOccupation,
+            fatherPhone: student?.fatherPhone,
+            motherOccupation: student?.motherOccupation,
+            motherPhone: student?.motherPhone,
+            motherPreviousFamily: student?.motherPreviousFamily,
+            address: student?.address,
         };
         setStudent(fetchedStudent);
     }, [id]);

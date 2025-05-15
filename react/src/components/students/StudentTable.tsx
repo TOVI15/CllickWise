@@ -30,7 +30,8 @@ const StudentsTable: React.FC = () => {
   const [openStudent, setOpenStudent] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<typeStudent | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const { searchTerm, filterCriteria } = useSearch();
+  const { searchTerm  } = useSearch();
+  const { filterCriteria  } = useSearch();
   const [filteredStudents, setFilteredStudents] = useState<typeStudent[]>([]);
   const location = useLocation();
   const [finalFiltered, setFinalFiltered] = useState(students);
@@ -79,28 +80,43 @@ const StudentsTable: React.FC = () => {
     const unsubscribe = subscribeToClassrooms(setClassrooms);
     return () => unsubscribe();
   }, []);
+
+  const replaceClassNamesInFilter = (filterCode: string): string => {
+    return filterCode.replace(/['"](כיתה [אבג])['"]/g, (_, name) => classrooms[name]);
+  };
   const filterStudents = () => {
     const safeSearchTerm = typeof searchTerm === 'string' ? searchTerm.toLowerCase() : '';
-  
-    const filteredResults = filteredByRoute.filter((student) => {
-      const nameMatch =
-        student.firstName?.toLowerCase().includes(safeSearchTerm) || false;
-      const lastNameMatch =
-        student.lastName?.toLowerCase().includes(safeSearchTerm) || false;
-      const searchMatch = nameMatch || lastNameMatch;
-  
-      if (filterCriteria === 'name') {
-        return searchMatch;
-      } else if (filterCriteria === 'age') {
-        const classMatch = student.groupId?.toString().includes(safeSearchTerm) || false;
-        return searchMatch && classMatch;
+  let filteredResults = [...filteredByRoute];
+    
+    if (filterCriteria && filterCriteria.startsWith("s =>")) {
+      try {
+        const fixedCriteria = replaceClassNamesInFilter(filterCriteria); // אם את משתמשת בזה
+        const filterFn = new Function("return " + fixedCriteria)();
+        filteredResults = filteredResults.filter(filterFn);
+        console.log("📌 תוצאה אחרי סינון חכם:", filteredResults);
+      
+        return; // חשוב! עצרי כאן כדי שהסינון הפשוט לא ירוץ
+      } catch (err) {
+        console.error("❌ שגיאה בהרצת ביטוי חכם מה-AI:", err);
       }
+    }
   
-      return searchMatch;
-    });
+    if (safeSearchTerm) {
+      filteredResults = filteredResults.filter((student) => {
+        const nameMatch = student.firstName?.toLowerCase().includes(safeSearchTerm) || false;
+        const lastNameMatch = student.lastName?.toLowerCase().includes(safeSearchTerm) || false;
+        return nameMatch || lastNameMatch;
+      });
+      console.log("🔍 תוצאה אחרי חיפוש רגיל:", filteredResults);
+    }
+  console.log(filteredResults);
   
     setFinalFiltered(filteredResults);
+  
   };
+  
+
+
   useEffect(() => {
     filterStudents();
   }, [location.pathname, searchTerm, filterCriteria, filteredStudents]);
@@ -188,7 +204,7 @@ const StudentsTable: React.FC = () => {
   const studentsToPrint = selectedStudent
     ? [selectedStudent]
     : students.filter(s => selectedIds.includes(s.id));
-  
+
   const exportToExcel = () => {
     const dataToExport = students.filter((s) =>
       selectedIds.length === 0 || selectedIds.includes(s.id)
@@ -283,15 +299,15 @@ const StudentsTable: React.FC = () => {
             <div style={{ display: 'none' }}>
               <div ref={printRef} className="print-area">
                 {studentsToPrint.map(student => (
-                 <div key={student.id} className="print-card-wrapper">
-                 <StudentCard
-                   student={student}
-                   open={false}
-                   onClose={() => {}}
-                   onSave={(student: typeStudent) => {}}
-                   isEditing={false}
-                 />
-               </div>
+                  <div key={student.id} className="print-card-wrapper">
+                    <StudentCard
+                      student={student}
+                      open={false}
+                      onClose={() => { }}
+                      onSave={(student: typeStudent) => { }}
+                      isEditing={false}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
