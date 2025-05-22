@@ -61,8 +61,8 @@ const StudentsTable: React.FC = () => {
 
   const handleSaveStudent = (updatedStudent: typeStudent) => {
     axios.put(`https://localhost:7278/api/Students/${updatedStudent.id}`, updatedStudent)
-      .then(res => console.log("תלמיד התעדכן בשרת"))
-      .catch(err => console.error("שגיאה בעדכון התלמיד"));
+      .then(res => console.log("תלמיד התעדכן בשרת" , res))
+      .catch(err => console.error("שגיאה בעדכון התלמיד", err));  
     handleCloseDialog();
   };
   useEffect(() => {
@@ -304,7 +304,7 @@ const StudentsTable: React.FC = () => {
                       student={student}
                       open={false}
                       onClose={() => { }}
-                      onSave={(student: typeStudent) => { }}
+                      onSave={(student) => {student}}
                       isEditing={false}
                     />
                   </div>

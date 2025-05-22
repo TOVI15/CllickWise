@@ -96,6 +96,7 @@ export default function Login() {
         open={open}
         sx={backgroundStyle}
         onClose={(event, reason) => {
+          console.log(event);         
           if (reason === "backdropClick") return;
           setOpen(false);
         }}

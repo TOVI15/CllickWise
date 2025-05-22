@@ -115,7 +115,7 @@ export function Sidebar() {
     setClassToDelete(null);
     setShowDeleteDialog(false);
   };
-
+  console.log(selectedClass);
   const handleSendStudentInvite = () => {
     const templateParams = {
       email: studentEmail,
@@ -132,6 +132,8 @@ export function Sidebar() {
     emailjs.send('service_xzn15cu', 'template_sdtikhj', templateParams, 'bz6VLetnSM5d0aUpJ')
       .then((response) => {
         alert('המייל נשלח בהצלחה!');
+        console.log(response);
+
       }, (error) => {
         alert('שגיאה בשליחת המייל: ' + error.text);
       });

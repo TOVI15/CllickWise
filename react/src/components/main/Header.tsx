@@ -14,6 +14,7 @@ const Navbar: React.FC= () => {
     setSearchTerm(term); 
     setFilterCriteria("")
   };
+  console.log(filterCriteria); 
   const location = useLocation();
   const isStudentPage = location.pathname.includes('/users');
   const navigate = useNavigate();
