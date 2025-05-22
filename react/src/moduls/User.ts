@@ -1,11 +1,14 @@
 export type typeUser = {
-  id?: number,
-  fullName?: string,
-  email?: string,
-  password?: string,
-  phone?: string,
-  address?: string,
-  token?: string,
+  id: number,
+  name: string,
+  email: string,
+  password: string,
+  phone: string,
+  address: string,
+  token: string,
+  role : string,
+  isActive: boolean,
+  identity: string, 
 }
 
 export type Action = {

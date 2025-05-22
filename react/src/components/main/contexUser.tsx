@@ -7,7 +7,18 @@ export const UserContext = createContext<{
 } | undefined>(undefined);
 
 export default function UserProvider({ children }: { children: React.ReactNode }) {
-    const initialState: typeUser = {};
+    const initialState: typeUser = {
+        id: 0,
+        name: "",
+        email: "",
+        password: "",
+        phone: "",
+        address: "",
+        token: "",
+        role: "",
+        isActive: false,
+        identity: ""
+    };
     const [state, dispatch] = useReducer(User, initialState);
 
     return (

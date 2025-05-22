@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   Dialog, DialogActions, DialogContent, DialogTitle,
-  Button, IconButton, TextField, Box, Typography,
-  Avatar
+  Button, IconButton, TextField, Box, Typography, Avatar
 } from "@mui/material";
 import { Close as CloseIcon } from "@mui/icons-material";
 import { typeStudent } from "../../moduls/Student";
@@ -38,14 +37,12 @@ const StudentDialog = ({ open, student, onClose, onSave, isEditing }: StudentDia
         try {
           const response = await axios.get(`https://localhost:7278/api/Students/${student.id}`);
           setFolderPath(response.data.folderKey);
-          console.log(response.data.folderKey , "folderKey");
-
         } catch (error) {
           console.error("Failed to load folder path", error);
         }
       };
       fetchFolderPath();
-      
+
     }
   }, [open, student]);
 

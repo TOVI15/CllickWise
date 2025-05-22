@@ -4,10 +4,9 @@ import { blue } from '@mui/material/colors';
 import { useContext } from 'react';
 import { UserContext } from '../main/contexUser';
 
-
 export default function FallbackAvatars() {
   const contex = useContext(UserContext);
-  const user = contex?.state
+  const user = localStorage.getItem("userName") || contex?.state.name
 
   return (
     <Stack direction="row" spacing={2}>
@@ -21,7 +20,7 @@ export default function FallbackAvatars() {
         }}
         alt="Remy Sharp"
         src="/broken-image.jpg">
-        {user?.fullName?.charAt(0).toUpperCase()}
+        {user?.charAt(0).toUpperCase()}
       </Avatar>
     </Stack>
   );

@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router';
 import { UserContext } from '../main/contexUser';
 
 const backgroundStyle = {
-  backgroundImage: "url('./images/2.jpg')",
   backgroundSize: "cover",
   backgroundPosition: "center",
   position: "fixed",
@@ -29,7 +28,6 @@ const cardStyle = {
   textAlign: "center",
 };
 
-
 export default function Login() {
   const [identity, setIdentity] = useState('');
   const [password, setPassword] = useState('');
@@ -42,11 +40,8 @@ export default function Login() {
   if (!actionContext) {
     throw new Error('UserContext must be used within a UserProvider');
   }
-
-  const { dispatch } = actionContext;
-
   const handleLogin = async () => {
-    setMessages({ identity: '', password: '' }); // איפוס שגיאות קודמות
+    setMessages({ identity: '', password: '' });
 
     if (!identity || !password) {
       setMessages({
@@ -59,19 +54,19 @@ export default function Login() {
 
     try {
       const res = await axios.post('https://localhost:7278/api/Auth/login', { identity, password });
-      dispatch({ type: 'Create_User', data: { fullName: res.data.fullName, token: res.data.token } });
       setOpen(false);
+      localStorage.setItem("userName", res.data.fullName);
+      localStorage.setItem("token", res.data.token);
       navigate('/main');
     } catch (error: any) {
       if (error.response) {
-        // טיפול בשגיאות מהשרת
         if (error.response.status === 400) {
           setMessages({ identity: 'תעודת זהות לא תקינה', password: 'סיסמה לא תקינה' });
           setAlertState({ open: true, message: "פרטים שגויים, נסה שוב", severity: "error" });
         } else if (error.response.status === 500) {
           setAlertState({ open: true, message: "שגיאת שרת, נסה שוב מאוחר יותר", severity: "error" });
         } else {
-          setAlertState({ open: true, message: "אירעה שגיאה בלתי צפויה", severity: "error" });
+          setAlertState({ open: true, message: "פרטים שגויים נסה שנית", severity: "error" });
         }
       } else {
         setAlertState({ open: true, message: "לא ניתן להתחבר לשרת", severity: "error" });
@@ -82,7 +77,7 @@ export default function Login() {
   const handleIdentityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIdentity(e.target.value);
     if (e.target.value.length > 0) {
-      setMessages((prevMessages) => ({ ...prevMessages, identity: '' })); // הסרת הודעת השגיאה ברגע שמשנים
+      setMessages((prevMessages) => ({ ...prevMessages, identity: '' }));
     }
     if (messages.identity === '' && messages.password === '') {
       setAlertState({ open: false, message: "", severity: "error" });
@@ -91,7 +86,7 @@ export default function Login() {
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
     if (e.target.value.length > 0) {
-      setMessages((prevMessages) => ({ ...prevMessages, password: '' })); // הסרת הודעת השגיאה ברגע שמשנים
+      setMessages((prevMessages) => ({ ...prevMessages, password: '' }));
     }
   };
 
@@ -101,7 +96,6 @@ export default function Login() {
         open={open}
         sx={backgroundStyle}
         onClose={(event, reason) => {
-          console.log(event);
           if (reason === "backdropClick") return;
           setOpen(false);
         }}

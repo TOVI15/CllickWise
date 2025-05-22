@@ -11,8 +11,9 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import emailjs from 'emailjs-com';
+import { UserContext } from "../main/contexUser";
 
 export type Classroom = { id: number; name: string };
 
@@ -27,12 +28,12 @@ let classrooms: Classroom[] = (
 const listeners: ((classrooms: Classroom[]) => void)[] = [];
 
 export function getClassrooms(): Classroom[] {
-  return [...classrooms]; // מחזיר עותק כדי למנוע שינוי ישיר
+  return [...classrooms];
 }
 
 export function subscribeToClassrooms(listener: (classrooms: Classroom[]) => void): () => void {
   listeners.push(listener);
-  listener(getClassrooms()); // שולח את המצב הנוכחי מיד
+  listener(getClassrooms());
   return () => {
     const index = listeners.indexOf(listener);
     if (index !== -1) listeners.splice(index, 1);
@@ -75,6 +76,7 @@ export function Sidebar() {
   const location = useLocation();
   const [openClasses, setOpenClasses] = useState(false);
   const [selectedClass, setSelectedClass] = useState({ id: 0, name: '' });
+  const user = useContext(UserContext);
 
   const [classrooms, setClassrooms] = useState(getClassrooms());
 
@@ -96,7 +98,7 @@ export function Sidebar() {
   };
 
   const handleAddClass = () => {
-    const newId = Date.now(); // מזהה ייחודי
+    const newId = Date.now();
     addClassroom({ id: newId, name: newClassName });
     setNewClassName('');
     setShowAddDialog(false);
@@ -117,7 +119,7 @@ export function Sidebar() {
   const handleSendStudentInvite = () => {
     const templateParams = {
       email: studentEmail,
-      link: "https://cllickwise.onrender.com"  // הקישור שתשלח (אתה יכול לשנות את הקישור הזה למשהו אחר)
+      link: "https://cllickwise.onrender.com"
     };
     const isValidEmail = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(studentEmail);
     if (!studentEmail || !isValidEmail) {
@@ -154,7 +156,6 @@ export function Sidebar() {
       }}
     >
       <List sx={{ color: 'primary.main' }}>
-        {/* כפתור הוספת תלמיד */}
         <Box sx={{ px: 2, py: 1 }}>
           <Button
             variant="contained"
@@ -164,7 +165,7 @@ export function Sidebar() {
             startIcon={<PersonAddIcon />}
             sx={{
               display: 'flex',
-              flexDirection: 'row-reverse', // מאפשר שהטקסט יהיה קודם             
+              flexDirection: 'row-reverse',
             }}
           >
             הוספת תלמיד
@@ -173,7 +174,6 @@ export function Sidebar() {
 
         <Divider />
 
-        {/* תלמידים רשומים */}
         <ListItem disablePadding>
           <ListItemButton
             component={Link}
@@ -186,7 +186,7 @@ export function Sidebar() {
             <ListItemText primary="רשומים" sx={{ textAlign: 'right' }} />
           </ListItemButton>
         </ListItem>
-
+        <Divider />
         <ListItem disablePadding>
           <ListItemButton
             component={Link}
@@ -250,10 +250,10 @@ export function Sidebar() {
                       autoFocus
                       sx={{
                         '& .MuiOutlinedInput-root': {
-                          borderColor: 'transparent', // הסרת המסגרת השחורה אחרי הפוקוס
+                          borderColor: 'transparent',
                         },
                         '& .MuiOutlinedInput-root.Mui-focused': {
-                          borderColor: 'transparent', // הסרת המסגרת גם כשיש פוקוס
+                          borderColor: 'transparent',
                         }
                       }}
                     />
@@ -274,22 +274,22 @@ export function Sidebar() {
 
 
         <Divider sx={{ my: 2 }} />
-
-        <ListItem disablePadding>
-          <ListItemButton
-            component={Link}
-            to="/users"
-            selected={location.pathname === "/users"}
-          >
-            <ListItemIcon sx={{ minWidth: 0, ml: 1, color: 'primary.main' }}>
-              <ManageAccountsIcon />
-            </ListItemIcon>
-            <ListItemText primary="ניהול משתמשים" sx={{ textAlign: 'right' }} />
-          </ListItemButton>
-        </ListItem>
+        {user?.state.role === "Admin" && (
+          <ListItem disablePadding>
+            <ListItemButton
+              component={Link}
+              to="/main/users"
+              selected={location.pathname === "/main/users"}
+            >
+              <ListItemIcon sx={{ minWidth: 0, ml: 1, color: 'primary.main' }}>
+                <ManageAccountsIcon />
+              </ListItemIcon>
+              <ListItemText primary="ניהול משתמשים" sx={{ textAlign: 'right' }} />
+            </ListItemButton>
+          </ListItem>
+        )}
       </List>
 
-      {/* דיאלוגים */}
       <Dialog open={showAddDialog} onClose={() => setShowAddDialog(false)}>
         <DialogTitle>הוספת קבוצה</DialogTitle>
         <DialogContent>
@@ -319,7 +319,6 @@ export function Sidebar() {
         </DialogActions>
       </Dialog>
 
-      {/* דיאלוג הוספת תלמיד */}
       <Dialog open={showAddStudentDialog} onClose={() => setShowAddStudentDialog(false)}>
         <DialogTitle>הוספת תלמיד</DialogTitle>
         <DialogContent>

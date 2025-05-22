@@ -1,4 +1,4 @@
-import React, {  useEffect } from 'react';
+import React, { useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
@@ -9,22 +9,19 @@ interface SearchProps {
 }
 
 const Search: React.FC<SearchProps> = ({ searchTerm, onSearch }) => {
-  // הגדרת פונקציה לשינוי המילה בזמן הקשה
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onSearch(event.target.value); // כל שינוי בתיבת החיפוש, תעדכן את המילה
+    onSearch(event.target.value);
   };
 
-  // טיפול בלחיצה על Enter אם יש צורך
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      onSearch(searchTerm); // חפש אם נלחץ Enter
+      onSearch(searchTerm);
     }
   };
 
-  // אם המשתמש מוחק את כל המילה, הצג את כל הנתונים
   useEffect(() => {
     if (searchTerm === '') {
-      onSearch(''); // אם החיפוש ריק, הצג את כל הנתונים
+      onSearch('');
     }
   }, [searchTerm, onSearch]);
 
@@ -35,7 +32,7 @@ const Search: React.FC<SearchProps> = ({ searchTerm, onSearch }) => {
       fullWidth
       value={searchTerm}
       onChange={handleChange}
-      onKeyDown={handleKeyDown} // מימוש לחיצה על Enter
+      onKeyDown={handleKeyDown}
       size="small"
       sx={{
         backgroundColor: '#f1f3f4',
@@ -52,7 +49,7 @@ const Search: React.FC<SearchProps> = ({ searchTerm, onSearch }) => {
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
-            <SearchIcon color="action" sx={{ cursor: 'pointer' }} /> {/* הוספת pointer על האייקון */}
+            <SearchIcon color="action" sx={{ cursor: 'pointer' }} />
           </InputAdornment>
         ),
       }}

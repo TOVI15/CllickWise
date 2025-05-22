@@ -1,34 +1,55 @@
 import { createBrowserRouter } from "react-router";
-import About from "./components/main/Main";
-import store from "./components/recipe/recipeStor";
-import { Provider } from "react-redux";
-import AddRecipes from "./components/recipe/AddRecipes";
-import All from "./components/recipe/SeeRecipes";
 import Login from "./components/user/Login";
 import AppLayout from "./components/main/AppLayout";
-import RegisteredStudents from "./components/students/RegisteredStudents";
-import StudentEditCard from "./components/students/StudentEditCard";
-import StudentDatabase from "./components/students/StudentDatabase";
 import StudentsTable from "./components/students/StudentTable";
+import ResetPasswordPage from "./components/user/ResetPasswordPage";
+import ProtectedRoute from "./components/user/ProtectedRoute";
+import EmployeeManagement from "./components/user/EmployeeManagement";
 
 export const router = createBrowserRouter([
-
-  
   { path: "/", element: <Login /> },
+  { path: "/reset-password", element: <ResetPasswordPage /> },
 
   {
     path: "/main",
-    element: <AppLayout />,
+    element: (
+      <ProtectedRoute>
+        <AppLayout />
+      </ProtectedRoute>
+    ),
     children: [
-      { path: "about", element: <About /> },
-      { path: "students", element: <StudentsTable/> },
-      { path: "students/status/true", element: <StudentsTable/> },
-      { path: "students/course/:groupId", element: <StudentsTable/> },
-    //   { path: "edit-student/:id", element: <StudentEditCard /> },
-    //   { path: "registedStudent", element: <RegisteredStudents /> },
-    //   { path: "studentDetails", element: <StudentDatabase  /> },
-    //   { path: "recipes", element: <All /> },
-    //   { path: "addrecipes", element: <Provider store={store}><AddRecipes /></Provider> },
+      {
+        path: "users",
+        element: (
+          <ProtectedRoute>
+            <EmployeeManagement  />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "students",
+        element: (
+          <ProtectedRoute>
+            <StudentsTable />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "students/status/true",
+        element: (
+          <ProtectedRoute>
+            <StudentsTable />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "students/course/:groupId",
+        element: (
+          <ProtectedRoute>
+            <StudentsTable />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
 ]);

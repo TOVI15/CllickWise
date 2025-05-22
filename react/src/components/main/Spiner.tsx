@@ -7,14 +7,14 @@ export function Spinner() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "300px", // גובה קבוע כדי למרכז באמצע
+        height: "300px", 
       }}
     >
       <CircularProgress
         thickness={5}
         size={70}
         sx={{
-          color: (theme) => theme.palette.grey[400], // אפור כברירת מחדל
+          color: (theme) => theme.palette.grey[400], 
           animationDuration: "1.5s",
           '& svg': {
             color: "primary.main",

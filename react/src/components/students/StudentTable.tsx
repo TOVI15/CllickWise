@@ -12,14 +12,14 @@ import { typeStudent } from "../../moduls/Student";
 import StudentDialog from "./StudentCard";
 import { useSearch } from "../main/contexSearch";
 import { useLocation, useParams } from "react-router";
-import { Classroom, subscribeToClassrooms } from "./Sidebar";
+import { Classroom, getClassrooms, subscribeToClassrooms } from "./Sidebar";
 import ErrorAlert from "../main/ErrorAlart";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import StudentCard from "./StudentCard";
 
-
 const StudentsTable: React.FC = () => {
+  const [manualFilterOverride, setManualFilterOverride] = useState(false);
   const [students, setStudents] = useState<typeStudent[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [classrooms, setClassrooms] = useState<Classroom[]>([]);
@@ -30,8 +30,8 @@ const StudentsTable: React.FC = () => {
   const [openStudent, setOpenStudent] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<typeStudent | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const { searchTerm  } = useSearch();
-  const { filterCriteria  } = useSearch();
+  const { searchTerm } = useSearch();
+  const { filterCriteria } = useSearch();
   const [filteredStudents, setFilteredStudents] = useState<typeStudent[]>([]);
   const location = useLocation();
   const [finalFiltered, setFinalFiltered] = useState(students);
@@ -82,43 +82,49 @@ const StudentsTable: React.FC = () => {
   }, []);
 
   const replaceClassNamesInFilter = (filterCode: string): string => {
-    return filterCode.replace(/['"](כיתה [אבג])['"]/g, (_, name) => classrooms[name]);
+    const allClassrooms = getClassrooms();
+    return filterCode.replace(/['"]?([א-ת]{1,2}|כיתה [א-ת]{1,2})['"]?/g, (match, groupName) => {
+      const normalized = groupName.replace("כיתה", "").trim();
+      const found = allClassrooms.find(cls => cls.name.endsWith(normalized));
+      return found ? found.id.toString() : match; 
+    });
   };
+
   const filterStudents = () => {
     const safeSearchTerm = typeof searchTerm === 'string' ? searchTerm.toLowerCase() : '';
-  let filteredResults = [...filteredByRoute];
-    
+    let filteredResults = [...filteredByRoute];
+
     if (filterCriteria && filterCriteria.startsWith("s =>")) {
       try {
-        const fixedCriteria = replaceClassNamesInFilter(filterCriteria); // אם את משתמשת בזה
-        const filterFn = new Function("return " + fixedCriteria)();
+        const fixedCriteria = replaceClassNamesInFilter(filterCriteria);
+        const normalizedFilter = fixedCriteria.replace(/GroupId/g, "groupId");
+        const filterFn = new Function("return " + normalizedFilter)();
         filteredResults = filteredResults.filter(filterFn);
-        console.log("📌 תוצאה אחרי סינון חכם:", filteredResults);
-      
-        return; // חשוב! עצרי כאן כדי שהסינון הפשוט לא ירוץ
+
+        setFinalFiltered(filteredResults);
+        setManualFilterOverride(true);
+        return;
       } catch (err) {
         console.error("❌ שגיאה בהרצת ביטוי חכם מה-AI:", err);
       }
     }
-  
+
     if (safeSearchTerm) {
       filteredResults = filteredResults.filter((student) => {
         const nameMatch = student.firstName?.toLowerCase().includes(safeSearchTerm) || false;
         const lastNameMatch = student.lastName?.toLowerCase().includes(safeSearchTerm) || false;
         return nameMatch || lastNameMatch;
       });
-      console.log("🔍 תוצאה אחרי חיפוש רגיל:", filteredResults);
     }
-  console.log(filteredResults);
-  
     setFinalFiltered(filteredResults);
-  
   };
-  
-
 
   useEffect(() => {
-    filterStudents();
+    if (!manualFilterOverride) {
+      filterStudents();
+    } else {
+      setManualFilterOverride(false);
+    }
   }, [location.pathname, searchTerm, filterCriteria, filteredStudents]);
 
   const handleSelect = (id: number) => {
@@ -194,7 +200,6 @@ const StudentsTable: React.FC = () => {
     `);
     printWindow.document.close();
 
-    // זמן קצר להבטיח שה־DOM נטען לפני הדפסה
     setTimeout(() => {
       printWindow.focus();
       printWindow.print();
@@ -224,11 +229,9 @@ const StudentsTable: React.FC = () => {
   };
   const confirmDelete = () => {
     if (multiDeleteMode) {
-      // במקרה של מחיקה מרובה
       setStudents(prev => prev.filter(s => !selectedIds.includes(s.id)));
       setSelectedIds([]);
 
-      // שליחת בקשות מחיקה מרובות לשרת
       axios.all(selectedIds.map(id =>
         axios.delete(`https://localhost:7278/api/Students/${id}`)
       ))
@@ -258,7 +261,7 @@ const StudentsTable: React.FC = () => {
     setSelectedGroup(newGroupId);
     setIsEditing(false);
     const updatedStudent = { ...student, groupId: newGroupId };
-    handleSaveStudent(updatedStudent); // שימוש בפונקציה הקיימת שלך
+    handleSaveStudent(updatedStudent);
   };
   const handleRegister = (student: typeStudent) => {
     const updatedStudent = { ...student, registerStudent: !student.registerStudent };
@@ -266,8 +269,6 @@ const StudentsTable: React.FC = () => {
     axios.put(`https://localhost:7278/api/Students/${student.id}`, updatedStudent)
       .then(() => {
         console.log("סטטוס התעדכן בשרת");
-
-        // עדכון הסטודנט במערך המקומי
         setStudents(prev =>
           prev.map(s => s.id === student.id ? { ...s, registerStudent: updatedStudent.registerStudent } : s)
         );
@@ -280,7 +281,6 @@ const StudentsTable: React.FC = () => {
         console.error("שגיאה בעדכון הסטטוס", err);
       });
   };
-
 
   return (
     <Box sx={{ width: "97%", backgroundColor: "#f5f5f5", pt: 3, px: 2 }}>
@@ -347,8 +347,8 @@ const StudentsTable: React.FC = () => {
                   <TableCell colSpan={10} align="center">
                     <Box
                       sx={{
-                        backgroundColor: "#e3f2fd", // תכלת בהיר
-                        color: "#1565c0",            // כחול כהה
+                        backgroundColor: "#e3f2fd", 
+                        color: "#1565c0",            
                         padding: 3,
                         borderRadius: 2,
                         fontWeight: "bold",
