@@ -1,253 +1,357 @@
 @if(isLoading) {
-<div class="loading-overlay">
-  <mat-progress-spinner color="primary" mode="indeterminate" diameter="80">
-  </mat-progress-spinner>
-  <p>שולח נתונים...</p>
-</div>
-}
-@else {
-<div class="container">
-  <mat-card class="form-card">
-    <h2 class="title">טופס רישום</h2>
-    <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
-      <!-- פרטי תלמיד -->
-      <h3 class="section-title">פרטי תלמיד</h3>
-      <div class="form-row">
-        <mat-form-field class="custom-input">
-          <mat-label>שם משפחה</mat-label>
-          <input matInput formControlName="lastName" required>
-        </mat-form-field>
-
-        <mat-form-field class="custom-input">
-          <mat-label>שם פרטי</mat-label>
-          <input matInput formControlName="firstName" required>
-        </mat-form-field>
+  <div class="loading-overlay">
+    <mat-progress-spinner color="primary" mode="indeterminate" diameter="80">
+    </mat-progress-spinner>
+    <p>שולח נתונים...</p>
+  </div>
+  }
+  @else {
+  <div class="container">
+    <mat-card class="form-card">
+      <div class="header-section">
+        <mat-icon class="header-icon">assignment</mat-icon>
+        <h1 class="title">טופס רישום</h1>
+        <p class="subtitle">אנא מלא את כל הפרטים הנדרשים</p>
       </div>
-
-       <div class="form-row">
-          <mat-form-field class="custom-input" >
-            <mat-label>כהן/לוי/ישראל</mat-label>
-            <input matInput formControlName="kohenLeviIsrael" required>
-          </mat-form-field>
-
-          <mat-form-field class="custom-input">
-            <mat-label>תעודת זהות/דרכון</mat-label>
-            <input matInput formControlName="identityNumber" required>
-          </mat-form-field>
+  
+      <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+        
+        <!-- פרטי תלמיד -->
+        <div class="section">
+          <div class="section-header">
+            <mat-icon class="section-icon">person</mat-icon>
+            <h2 class="section-title">פרטי תלמיד</h2>
+          </div>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>שם פרטי</mat-label>
+              <input matInput formControlName="firstName" required>
+              <mat-error>{{getFieldError('firstName')}}</mat-error>
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>שם משפחה</mat-label>
+              <input matInput formControlName="lastName" required>
+              <mat-error>{{getFieldError('lastName')}}</mat-error>
+            </mat-form-field>
+          </div>
+  
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>תעודת זהות/דרכון</mat-label>
+              <input matInput formControlName="identityNumber" required>
+              <mat-error>{{getFieldError('identityNumber')}}</mat-error>
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>כהן/לוי/ישראל</mat-label>
+              <input matInput formControlName="kohenLeviIsrael" required>
+              <mat-error>{{getFieldError('kohenLeviIsrael')}}</mat-error>
+            </mat-form-field>
+          </div>
+  
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>כתובת</mat-label>
+              <input matInput formControlName="address" required>
+              <mat-error>{{getFieldError('address')}}</mat-error>
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>מספר בניין</mat-label>
+              <input matInput formControlName="buildingNumber" required>
+              <mat-error>{{getFieldError('buildingNumber')}}</mat-error>
+            </mat-form-field>
+          </div>
+  
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>עיר</mat-label>
+              <input matInput formControlName="city" required>
+              <mat-error>{{getFieldError('city')}}</mat-error>
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>טלפון</mat-label>
+              <input matInput type="tel" formControlName="phone" required>
+              <mat-error>{{getFieldError('phone')}}</mat-error>
+            </mat-form-field>
+          </div>
+  
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>ארץ לידה</mat-label>
+              <input matInput formControlName="countryOfBirth" required>
+              <mat-error>{{getFieldError('countryOfBirth')}}</mat-error>
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>קופת חולים</mat-label>
+              <input matInput formControlName="healthInsurance" required>
+              <mat-error>{{getFieldError('healthInsurance')}}</mat-error>
+            </mat-form-field>
+          </div>
+  
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>תאריך לידה עברי</mat-label>
+              <input matInput formControlName="hebrewDateOfBirth" required>
+              <mat-error>{{getFieldError('hebrewDateOfBirth')}}</mat-error>
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>תאריך לידה לועזי</mat-label>
+              <input matInput formControlName="dateOfBirth" required>
+              <mat-error>{{getFieldError('dateOfBirth')}}</mat-error>
+            </mat-form-field>
+          </div>
         </div>
-
-        <!-- <div class="form-row"> 
-          <mat-form-field class="custom-input">
-            <mat-label>כתובת</mat-label>
-            <input matInput formControlName="address" required>
-          </mat-form-field>
-
-          <mat-form-field class="custom-input" >
-            <mat-label>מספר בניין</mat-label>
-            <input matInput formControlName="buildingNumber" required>
-          </mat-form-field>
+  
+        <!-- פרטי הורים -->
+        <div class="section">
+          <div class="section-header">
+            <mat-icon class="section-icon">family_restroom</mat-icon>
+            <h2 class="section-title">פרטי ההורים</h2>
+          </div>
+          
+          <div formGroupName="additionalInfo">
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>שם האב</mat-label>
+                <input matInput formControlName="fatherName" required>
+                <mat-error>{{getNestedFieldError('additionalInfo', 'fatherName')}}</mat-error>
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>פלאפון האב</mat-label>
+                <input matInput type="tel" formControlName="fatherPhone" required>
+                <mat-error>{{getNestedFieldError('additionalInfo', 'fatherPhone')}}</mat-error>
+              </mat-form-field>
+            </div>
+  
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>ארץ מוצא אב</mat-label>
+                <input matInput formControlName="fatherCountryOfOrigin">
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>עיסוק האב</mat-label>
+                <input matInput formControlName="fatherOccupation" required>
+                <mat-error>{{getNestedFieldError('additionalInfo', 'fatherOccupation')}}</mat-error>
+              </mat-form-field>
+            </div>
+  
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>שם האם</mat-label>
+                <input matInput formControlName="motherName" required>
+                <mat-error>{{getNestedFieldError('additionalInfo', 'motherName')}}</mat-error>
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>האם לבית</mat-label>
+                <input matInput formControlName="motherLastName" required>
+                <mat-error>{{getNestedFieldError('additionalInfo', 'motherLastName')}}</mat-error>
+              </mat-form-field>
+            </div>
+  
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>פלאפון האם</mat-label>
+                <input matInput type="tel" formControlName="motherPhone" required>
+                <mat-error>{{getNestedFieldError('additionalInfo', 'motherPhone')}}</mat-error>
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>ארץ מוצא אם</mat-label>
+                <input matInput formControlName="motherCountryOfOrigin">
+              </mat-form-field>
+            </div>
+  
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>עיסוק האם</mat-label>
+                <input matInput formControlName="motherOccupation" required>
+                <mat-error>{{getNestedFieldError('additionalInfo', 'motherOccupation')}}</mat-error>
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>אימייל</mat-label>
+                <input matInput type="email" formControlName="email" autocomplete="email">
+                <mat-error>{{getNestedFieldError('additionalInfo', 'email')}}</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
         </div>
-
-        <div class="form-row">
-          <mat-form-field class="custom-input" >
-            <mat-label>עיר</mat-label>
-            <input matInput formControlName="city" required>
-          </mat-form-field>
-
-          <mat-form-field class="custom-input" >
-            <mat-label>טלפון</mat-label>
-            <input matInput type="tel" formControlName="phone" required>
-          </mat-form-field>
+  
+        <!-- מקומות לימוד קודמים -->
+        <div class="section">
+          <div class="section-header">
+            <mat-icon class="section-icon">school</mat-icon>
+            <h2 class="section-title">מקומות לימוד קודמים</h2>
+          </div>
+          
+          <div formGroupName="additionalInfo">
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>שם ישיבה</mat-label>
+                <input matInput formControlName="yeshivaName" required>
+                <mat-error>{{getNestedFieldError('additionalInfo', 'yeshivaName')}}</mat-error>
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>מס' שנות לימוד</mat-label>
+                <input matInput formControlName="yearsOfStudy" required>
+                <mat-error>{{getNestedFieldError('additionalInfo', 'yearsOfStudy')}}</mat-error>
+              </mat-form-field>
+            </div>
+  
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>עיר</mat-label>
+                <input matInput formControlName="previousSchoolCity" required>
+                <mat-error>{{getNestedFieldError('additionalInfo', 'previousSchoolCity')}}</mat-error>
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>טלפון הישיבה</mat-label>
+                <input matInput formControlName="previousSchoolPhone" required>
+                <mat-error>{{getNestedFieldError('additionalInfo', 'previousSchoolPhone')}}</mat-error>
+              </mat-form-field>
+            </div>
+  
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>כתובת</mat-label>
+                <input matInput formControlName="previousSchoolAddress" required>
+                <mat-error>{{getNestedFieldError('additionalInfo', 'previousSchoolAddress')}}</mat-error>
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>אימייל</mat-label>
+                <input matInput type="email" formControlName="previousSchoolEmail">
+                <mat-error>{{getNestedFieldError('additionalInfo', 'previousSchoolEmail')}}</mat-error>
+              </mat-form-field>
+            </div>
+  
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>שם ראש הישיבה</mat-label>
+                <input matInput formControlName="roshYeshivaName" required>
+                <mat-error>{{getNestedFieldError('additionalInfo', 'roshYeshivaName')}}</mat-error>
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>טלפון רה"י</mat-label>
+                <input matInput formControlName="roshYeshivaPhone" required>
+                <mat-error>{{getNestedFieldError('additionalInfo', 'roshYeshivaPhone')}}</mat-error>
+              </mat-form-field>
+            </div>
+  
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field full-width">
+                <mat-label>הערות</mat-label>
+                <textarea matInput formControlName="note" rows="3"></textarea>
+              </mat-form-field>
+            </div>
+          </div>
         </div>
-
-        <div class="form-row">
-          <mat-form-field class="custom-input" >
-            <mat-label>ארץ לידה</mat-label>
-            <input matInput formControlName="countryOfBirth" required>
-          </mat-form-field>
-
-          <mat-form-field class="custom-input" >
-            <mat-label>קופת חולים</mat-label>
-            <input matInput formControlName="healthInsurance" required>
-          </mat-form-field>
+  
+        <!-- העלאת קבצים -->
+        <div class="section">
+          <div class="section-header">
+            <mat-icon class="section-icon">cloud_upload</mat-icon>
+            <h2 class="section-title">העלאת קבצים</h2>
+          </div>
+  
+          <div class="upload-section">
+            <div class="upload-container" [class.error]="registrationForm.get('idCardFile')?.invalid && registrationForm.get('idCardFile')?.touched">
+              <div class="upload-header">
+                <mat-icon class="upload-icon">badge</mat-icon>
+                <span class="upload-title">העלאת צילום ת.ז. של ההורים</span>
+              </div>
+              <label for="idCard" class="upload-label">
+                <mat-icon>cloud_upload</mat-icon>
+                <span>{{ selectedIdCardFileName || 'בחר קובץ' }}</span>
+              </label>
+              <input type="file" id="idCard" (change)="onIdCardChange($event)" accept="image/*" hidden>
+              @if(registrationForm.get('idCardFile')?.invalid && registrationForm.get('idCardFile')?.touched) {
+                <div class="upload-error">נדרש להעלות קובץ</div>
+              }
+            </div>
+  
+            <div class="upload-container" [class.error]="registrationForm.get('passportFile')?.invalid && registrationForm.get('passportFile')?.touched">
+              <div class="upload-header">
+                <mat-icon class="upload-icon">photo_camera</mat-icon>
+                <span class="upload-title">העלאת תמונת פספורט</span>
+              </div>
+              <label for="passportPhoto" class="upload-label">
+                <mat-icon>cloud_upload</mat-icon>
+                <span>{{ selectedPassportFileName || 'בחר קובץ' }}</span>
+              </label>
+              <input type="file" id="passportPhoto" (change)="onPassportChange($event)" accept="image/*" hidden>
+              @if(registrationForm.get('passportFile')?.invalid && registrationForm.get('passportFile')?.touched) {
+                <div class="upload-error">נדרש להעלות קובץ</div>
+              }
+            </div>
+          </div>
         </div>
-
-        <div class="form-row">
-          <mat-form-field class="custom-input" >
-            <mat-label>תאריך לידה עברי</mat-label>
-            <input matInput formControlName="hebrewDateOfBirth" required>
-          </mat-form-field>
-
-          <mat-form-field class="custom-input" >
-            <mat-label>תאריך לידה לועזי</mat-label>
-            <input matInput formControlName="dateOfBirth" required>
-          </mat-form-field>
+  
+        <!-- אמצעי תשלום -->
+        <div class="section">
+          <div class="section-header">
+            <mat-icon class="section-icon">payment</mat-icon>
+            <h2 class="section-title">אמצעי תשלום</h2>
+          </div>
+          
+          <div class="payment-section">
+            <mat-radio-group formControlName="paymentMethod" required class="payment-radio">
+              <mat-radio-button value="credit" class="payment-option">
+                <div class="payment-content">
+                  <mat-icon>credit_card</mat-icon>
+                  <span>אשראי</span>
+                </div>
+              </mat-radio-button>
+              <mat-radio-button value="cash" class="payment-option">
+                <div class="payment-content">
+                  <mat-icon>payments</mat-icon>
+                  <span>מזומן</span>
+                </div>
+              </mat-radio-button>
+              <mat-radio-button value="check" class="payment-option">
+                <div class="payment-content">
+                  <mat-icon>receipt</mat-icon>
+                  <span>צ'ק</span>
+                </div>
+              </mat-radio-button>
+            </mat-radio-group>
+            @if(registrationForm.get('paymentMethod')?.invalid && registrationForm.get('paymentMethod')?.touched) {
+              <div class="payment-error">נדרש לבחור אמצעי תשלום</div>
+            }
+          </div>
         </div>
-
-       <!-- פרטי הורים  
-       <h3  class="section-title">פרטי ההורים</h3>
-        <div formGroupName="additionalInfo" class="form-row">
-          <mat-form-field class="custom-input" >
-            <mat-label>שם האב</mat-label>
-            <input matInput formControlName="fatherName" required>
-          </mat-form-field>
-
-          <mat-form-field class="custom-input" >
-            <mat-label>פלאפון האב</mat-label>
-            <input matInput type="tel" formControlName="fatherPhone" required>
-          </mat-form-field>
+  
+        <!-- כפתור שליחה -->
+        <div class="submit-section">
+          <button mat-raised-button color="primary" type="submit" class="submit-button">
+            <mat-icon>send</mat-icon>
+            שלח טופס
+          </button>
         </div>
-
-        <div formGroupName="additionalInfo" class="form-row">
-          <mat-form-field class="custom-input" >
-            <mat-label>ארץ מוצא אב</mat-label>
-            <input matInput formControlName="fatherCountryOfOrigin" required>
-          </mat-form-field>
-
-          <mat-form-field class="custom-input" >
-            <mat-label>עיסוק האב</mat-label>
-            <input matInput formControlName="fatherOccupation" required>
-          </mat-form-field>
-        </div>
-
-        <div formGroupName="additionalInfo" class="form-row">
-          <mat-form-field class="custom-input" >
-            <mat-label>שם האם</mat-label>
-            <input matInput formControlName="motherName" required>
-          </mat-form-field>
-
-          <mat-form-field class="custom-input" >
-            <mat-label>האם לבית</mat-label>
-            <input matInput formControlName="motherLastName" required>
-          </mat-form-field>
-        </div>
-
-        <div formGroupName="additionalInfo" class="form-row">
-          <mat-form-field class="custom-input" >
-            <mat-label>פלאפון האם</mat-label>
-            <input matInput type="tel" formControlName="motherPhone" required>
-          </mat-form-field>
-
-          <mat-form-field class="custom-input" >
-            <mat-label>ארץ מוצא אם</mat-label>
-            <input matInput formControlName="motherCountryOfOrigin" required>
-          </mat-form-field>
-        </div>
-        <div formGroupName="additionalInfo" class="form-row">
-          <mat-form-field class="custom-input" >
-            <mat-label>עיסוק האם</mat-label>
-            <input matInput formControlName="motherOccupation" required>
-          </mat-form-field>
-
-          <mat-form-field class="custom-input" >
-            <mat-label>אימייל</mat-label>
-            <input matInput type="email" formControlName="email" autocomplete="email">
-          </mat-form-field>
-        </div>
-        <h3 class="section-title">מקומות לימוד קודמים</h3>
-        <div formGroupName="additionalInfo" class="form-row">
-          <mat-form-field class="custom-input" >
-            <mat-label>שם ישיבה</mat-label>
-            <input matInput formControlName="yeshivaName">
-          </mat-form-field>
-
-          <mat-form-field class="custom-input" >
-            <mat-label>מס' שנות לימוד</mat-label>
-            <input matInput formControlName="yearsOfStudy">
-          </mat-form-field>
-        </div>
-
-        <div formGroupName="additionalInfo" class="form-row">
-          <mat-form-field class="custom-input" >
-            <mat-label>עיר</mat-label>
-            <input matInput formControlName="previousSchoolCity">
-          </mat-form-field>
-
-          <mat-form-field class="custom-input" >
-            <mat-label>טלפון הישיבה</mat-label>
-            <input matInput formControlName="previousSchoolPhone">
-          </mat-form-field>
-        </div>
-
-        <div formGroupName="additionalInfo" class="form-row">
-          <mat-form-field class="custom-input" >
-            <mat-label>כתובת</mat-label>
-            <input matInput formControlName="previousSchoolAddress">
-          </mat-form-field>
-
-          <mat-form-field class="custom-input" >
-            <mat-label>אימייל</mat-label>
-            <input matInput type="email" formControlName="previousSchoolEmail">
-          </mat-form-field>
-        </div>
-
-        <div formGroupName="additionalInfo" class="form-row">
-          <mat-form-field class="custom-input" >
-            <mat-label>שם ראש הישיבה</mat-label>
-            <input matInput formControlName="roshYeshivaName">
-          </mat-form-field>
-
-          <mat-form-field class="custom-input" >
-            <mat-label>טלפון רה"י</mat-label>
-            <input matInput type="email" formControlName="roshYeshivaPhone">
-          </mat-form-field>
-        </div> 
- המלצות -->
-      <div formGroupName="additionalInfo" class="form-row">
-        <mat-form-field class="custom-input">
-          <mat-label>הערות</mat-label>
-          <textarea matInput formControlName="note" autocomplete="הערות" rows="1"></textarea>
-        </mat-form-field>
-      </div>
-       <!-- תמונות  -->
-      <h3 class="section-title">העלאת קבצים</h3>
-
-      <div class="upload-container">
-        <label for="idCard" class="upload-title">העלאת צילום ת.ז. של ההורים</label>
-        <label for="idCard" class="upload-label">
-          <mat-icon class="upload-icon">cloud_upload</mat-icon>
-          <span class="file-name">{{ selectedIdCardFileName || 'לא נבחר קובץ' }}</span>
-        </label>
-        <input type="file" id="idCard" (change)="onIdCardChange($event)" accept="image/*" hidden>
-      </div>
-
-      <!-- העלאת תמונת פספורט -->
-      <div class="upload-container">
-        <label for="passportPhoto" class="upload-title">העלאת תמונת פספורט</label>
-        <label for="passportPhoto" class="upload-label">
-          <mat-icon class="upload-icon">cloud_upload</mat-icon>
-          <span class="file-name">{{ selectedPassportFileName || 'לא נבחר קובץ' }}</span>
-        </label>
-        <input type="file" id="passportPhoto" (change)="onPassportChange($event)" accept="image/*" hidden>
-      </div>
-
-      <!-- פרטי תשלום  -->
-      <h3 class="section-title">אמצעי תשלום</h3>
-      <div class="payment-options">
-        <mat-radio-group formControlName="paymentMethod" required>
-          <mat-radio-button value="credit">אשראי</mat-radio-button>
-          <mat-radio-button value="cash">מזומן</mat-radio-button>
-          <mat-radio-button value="check">צ'ק</mat-radio-button>
-        </mat-radio-group>
-      </div>
-
-      <!-- כפתור שליחה -->
-      <div>
-        <button mat-raised-button color="primary" type="submit" [disabled]="registrationForm.invalid">
-          שלח
-        </button>
-      </div>
-
-    </form>
-  </mat-card>
-</div>
-}
-@if (alert.open) {
-<div class="alert-container" [ngClass]="alert.severity">
-  <mat-icon class="alert-icon">error_outline</mat-icon>
-  <span>{{ alert.message }}</span>
-  <button mat-icon-button (click)="closeAlert()" aria-label="סגור">
-    <mat-icon>close</mat-icon>
-  </button>
-</div>
-}
+  
+      </form>
+    </mat-card>
+  </div>
+  }
+  
+  @if (alert.open) {
+  <div class="alert-container" [ngClass]="alert.severity">
+    <mat-icon class="alert-icon">error_outline</mat-icon>
+    <span>{{ alert.message }}</span>
+    <button mat-icon-button (click)="closeAlert()" aria-label="סגור">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  }
