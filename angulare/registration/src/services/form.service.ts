@@ -7,7 +7,7 @@ import { first, Observable, throwError } from 'rxjs';
   providedIn: 'root'
 })
 export class FormService {
-  private apiUrl = 'https://localhost:7278/api';
+  private apiUrl = 'https://click-wisw-server.onrender.com/api';
   constructor(private http: HttpClient) { }
 
   login(form: any, folderName: string ): Observable<any> {
