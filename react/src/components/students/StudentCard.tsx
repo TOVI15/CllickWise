@@ -35,7 +35,7 @@ const StudentDialog = ({ open, student, onClose, onSave, isEditing }: StudentDia
       setEditedStudent(student);
       const fetchFolderPath = async () => {
         try {
-          const response = await axios.get(`https://localhost:7278/api/Students/${student.id}`);
+          const response = await axios.get(`https://click-wisw-server.onrender.com/api/Students/${student.id}`);
           setFolderPath(response.data.folderKey);
         } catch (error) {
           console.error("Failed to load folder path", error);
@@ -75,7 +75,7 @@ const StudentDialog = ({ open, student, onClose, onSave, isEditing }: StudentDia
             <img src="https://click-wise-testpnoren.s3.amazonaws.com/${folderPath}/passport.jpg" class="image" />
             <div class="info">
               <p><strong>שם:</strong> ${student?.firstName} ${student?.lastName}</p>
-              <p><strong>ת"ז:</strong> ${student?.id}</p>
+              <p><strong>ת"ז:</strong> ${student?.identityNumber}</p>
               <p><strong>תאריך לידה:</strong> ${student?.dateOfBirth || "לא ידוע"}</p>
               <p><strong>גיל:</strong> ${age}</p>
               <p><strong>כתובת:</strong> ${student?.address}</p>

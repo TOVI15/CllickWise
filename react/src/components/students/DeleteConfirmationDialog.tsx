@@ -1,18 +1,26 @@
+"use client"
+
 import type React from "react"
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box, Divider } from "@mui/material"
 import { Warning, Delete, Cancel } from "@mui/icons-material"
 
-type Props = {
+interface DeleteConfirmationDialogProps {
   open: boolean
-  onConfirm: () => void
-  onCancel: () => void
+  onClose: () => void
+  multiDeleteMode: boolean
+  confirmDelete: () => void
 }
 
-const DeleteDialog: React.FC<Props> = ({ open, onConfirm, onCancel }) => {
+const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
+  open,
+  onClose,
+  multiDeleteMode,
+  confirmDelete,
+}) => {
   return (
     <Dialog
       open={open}
-      onClose={onCancel}
+      onClose={onClose}
       maxWidth="xs"
       fullWidth
       PaperProps={{
@@ -36,7 +44,9 @@ const DeleteDialog: React.FC<Props> = ({ open, onConfirm, onCancel }) => {
 
       <DialogContent sx={{ pt: 3, pb: 2 }}>
         <Typography variant="body1" sx={{ color: "#666", lineHeight: 1.6 }}>
-          האם את בטוחה שברצונך למחוק את העובד?
+          {multiDeleteMode
+            ? "האם אתה בטוח שברצונך למחוק את כל התלמידים הנבחרים?"
+            : "האם אתה בטוח שברצונך למחוק את התלמיד?"}
         </Typography>
         <Typography variant="body2" sx={{ color: "#999", mt: 1 }}>
           פעולה זו לא ניתנת לביטול
@@ -47,7 +57,7 @@ const DeleteDialog: React.FC<Props> = ({ open, onConfirm, onCancel }) => {
 
       <DialogActions sx={{ p: 3, justifyContent: "flex-start", gap: 2 }}>
         <Button
-          onClick={onCancel}
+          onClick={onClose}
           sx={{
             color: "#666",
             borderColor: "#e0e0e0",
@@ -66,7 +76,7 @@ const DeleteDialog: React.FC<Props> = ({ open, onConfirm, onCancel }) => {
           ביטול
         </Button>
         <Button
-          onClick={onConfirm}
+          onClick={confirmDelete}
           color="error"
           variant="contained"
           sx={{
@@ -88,4 +98,4 @@ const DeleteDialog: React.FC<Props> = ({ open, onConfirm, onCancel }) => {
   )
 }
 
-export default DeleteDialog
+export default DeleteConfirmationDialog

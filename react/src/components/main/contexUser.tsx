@@ -1,29 +1,35 @@
-import { createContext, useReducer, Dispatch } from "react";
-import User, { Action, typeUser } from "../../moduls/User";
+import { createContext, useReducer, Dispatch, useEffect, useState } from "react";
+import UserReducer, { Action, initialUserState, typeUser } from "../../moduls/User";
 
 export const UserContext = createContext<{
-    state: typeUser;
-    dispatch: Dispatch<Action>;
+  state: typeUser;
+  dispatch: Dispatch<Action>;
+  isLoaded: boolean;
 } | undefined>(undefined);
 
 export default function UserProvider({ children }: { children: React.ReactNode }) {
-    const initialState: typeUser = {
-        id: 0,
-        name: "",
-        email: "",
-        password: "",
-        phone: "",
-        address: "",
-        token: "",
-        role: "",
-        isActive: false,
-        identity: ""
-    };
-    const [state, dispatch] = useReducer(User, initialState);
+    const storedUser = localStorage.getItem("user");
+    const parsedUser = storedUser ? JSON.parse(storedUser) : initialUserState;
+  
+    // 2. אתחול הדינאמי
+    const [state, dispatch] = useReducer(UserReducer, parsedUser);
+    const [isLoaded, setIsLoaded] = useState(false);
+  
+    useEffect(() => {
+      setIsLoaded(true); 
+    }, []);
+  
+    useEffect(() => {
+      if (state.token) {
+        localStorage.setItem("user", JSON.stringify(state));
+      } else {
+        localStorage.removeItem("user");
+      }
+    }, [state]);
 
-    return (
-        <UserContext value={{ state, dispatch }}>
-          {children}
-        </UserContext>
-    );
+  return (
+    <UserContext.Provider value={{ state, dispatch, isLoaded }}>
+      {children}
+    </UserContext.Provider>
+  );
 }

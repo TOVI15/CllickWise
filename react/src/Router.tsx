@@ -1,10 +1,11 @@
 import { createBrowserRouter } from "react-router";
 import Login from "./components/user/Login";
 import AppLayout from "./components/main/AppLayout";
-import StudentsTable from "./components/students/StudentTable";
 import ResetPasswordPage from "./components/user/ResetPasswordPage";
 import ProtectedRoute from "./components/user/ProtectedRoute";
 import EmployeeManagement from "./components/user/EmployeeManagement";
+import Temp from "./components/students/Table";
+import StudentsTable from "./components/students/Table";
 
 export const router = createBrowserRouter([
   { path: "/", element: <Login /> },
@@ -30,7 +31,7 @@ export const router = createBrowserRouter([
         path: "students",
         element: (
           <ProtectedRoute>
-            <StudentsTable />
+            <Temp />
           </ProtectedRoute>
         ),
       },
