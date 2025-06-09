@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import {createHashRouter } from "react-router";
 import Login from "./components/user/Login";
 import AppLayout from "./components/main/AppLayout";
 import ResetPasswordPage from "./components/user/ResetPasswordPage";
@@ -7,7 +7,7 @@ import EmployeeManagement from "./components/user/EmployeeManagement";
 import Temp from "./components/students/Table";
 import StudentsTable from "./components/students/Table";
 
-export const router = createBrowserRouter([
+export const router = createHashRouter([
   { path: "/", element: <Login /> },
   { path: "/reset-password", element: <ResetPasswordPage /> },
 
